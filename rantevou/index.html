@@ -171,6 +171,29 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
   #s-done .btns{flex-direction:row}
 }
 
+/* ---------- μουσική ---------- */
+#music{position:fixed; top:calc(var(--top) + 12px); left:12px; z-index:60;
+  display:flex; align-items:center; gap:9px; font-size:10px; padding:10px 12px}
+.eq{display:flex; align-items:flex-end; gap:2px; height:14px}
+.eq i{width:4px; height:6px; background:#fff; display:block}
+.eq i:nth-child(2){height:12px} .eq i:nth-child(3){height:8px}
+#music:not(.on) .eq i{opacity:.45}
+#music.on .eq i{animation:eq .6s steps(3) infinite}
+#music.on .eq i:nth-child(2){animation-delay:-.2s}
+#music.on .eq i:nth-child(3){animation-delay:-.4s}
+@keyframes eq{0%{height:4px}50%{height:14px}100%{height:8px}}
+#ytwrap{position:fixed; left:0; bottom:0; width:200px; height:200px; opacity:.01; pointer-events:none; z-index:-5}
+#ytwrap.show{opacity:1; pointer-events:auto; z-index:80; left:50%; bottom:calc(var(--bot) + 70px); transform:translateX(-50%);
+  width:240px; height:auto; background:var(--ink); padding:8px 8px 10px; box-shadow:0 0 0 4px var(--gold), 0 10px 0 4px rgba(0,0,0,.4)}
+#ytwrap.show iframe{width:224px; height:200px; display:block}
+#ytwrap .yt-tip{display:none; font-family:'Press Start 2P',monospace; font-size:9px; line-height:1.6; color:#fff; text-align:center; margin-bottom:8px}
+#ytwrap.show .yt-tip{display:block}
+#ytwrap .yt-x{display:none; position:absolute; top:-14px; right:-14px; width:30px; height:30px; border:none; background:var(--red); color:#fff;
+  font-family:'Press Start 2P',monospace; font-size:12px; box-shadow:0 0 0 3px var(--ink); cursor:pointer}
+#ytwrap.show .yt-x{display:block}
+#music.nudge{animation:nudge .5s steps(2) infinite; --c:var(--gold2)}
+@keyframes nudge{50%{transform:scale(1.15)}}
+
 /* ---------- ραντεβού ---------- */
 :root{ --pink:#ff7aa8; --pink2:#d94f86; }
 .hl.pink{color:var(--pink)}
@@ -191,6 +214,8 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
 <div class="sky" id="sky"></div>
 <canvas id="moon" data-sprite="moon" data-scale="6"></canvas>
 <div class="sea"></div>
+<button class="btn ghost small" id="music" type="button" aria-label="Μουσική"><span class="eq"><i></i><i></i><i></i></span><span id="musicLabel">♫</span></button>
+<div id="ytwrap"><div class="yt-tip">πάτα ▶ για μουσική</div><button class="yt-x" id="ytx" type="button">×</button><div id="yt"></div></div>
 
 <main class="box">
 
@@ -207,7 +232,7 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
   <!-- 1. Η ερώτηση -->
   <section class="screen" id="s-ask">
     <canvas class="heart-beat" data-sprite="heart" data-scale="9" style="height:110px; width:auto; margin:0 auto"></canvas>
-    <h1><span id="herName"></span>θες να πάμε <span class="hl pink">ραντεβού</span>;</h1>
+    <h1>Θες να πάμε <span class="hl pink">ραντεβού</span>;</h1>
     <p class="sub">διάλεξε σοφά...</p>
     <div class="btns" id="btns">
       <button class="btn yes" id="yes" type="button">ΝΑΙ!</button>
@@ -267,18 +292,21 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
    ΡΥΘΜΙΣΕΙΣ
    ========================================================= */
 const CONFIG = {
-  her: "Άννα",
   // Ειδοποίηση στο κινητό μέσω ntfy.sh (δωρεάν, χωρίς λογαριασμό).
   // Κατέβασε το app «ntfy» και κάνε Subscribe σε αυτό το topic:
-  ntfyTopic: "anna-rantevou-5517d04a",
-  // Προαιρετικό: το κινητό σου (π.χ. "+3069xxxxxxxx") → εμφανίζεται κουμπί που
-  // της ανοίγει έτοιμο SMS προς εσένα. Άφησέ το κενό για να μη φαίνεται.
-  phone: "",
+  ntfyTopic: "rantevou-9f2b4e9e7d",
+  // Το κινητό σου: στο τέλος της ανοίγει έτοιμο SMS προς εσένα με όλα τα στοιχεία
+  phone: "+306971565618",
   options: [
     { id: "food",  name: "ΦΑΓΗΤΟ", emoji: "🍝", sprite: "pasta",    sub: "κάτι νόστιμο" },
     { id: "drink", name: "ΠΟΤΟ",   emoji: "🍸", sprite: "cocktail", sub: "κάτι δροσερό" },
   ],
   times: ["19:00", "20:00", "21:00", "22:00"],
+  music: {
+    // George Michael – Careless Whisper (επίσημο YouTube)
+    youtube: ["izGwDsrQ1eQ"],
+    volume: 70,
+  },
 };
 
 /* ---------- pixel art ---------- */
@@ -380,23 +408,93 @@ for (let i = 0; i < 60; i++) {
 
 const $ = id => document.getElementById(id);
 const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} };
-if (CONFIG.her) $("herName").textContent = CONFIG.her + ", ";
 
 /* ---------- 8-bit εφέ ---------- */
-let actx = null;
+let actx = null, soundOn = true;
 function unlockAudio() {
   if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
   if (actx && actx.state === "suspended") actx.resume();
 }
 addEventListener("pointerdown", unlockAudio, { passive: true });
 function beep(f = 660, d = .08, when = 0) {
-  if (!actx || actx.state !== "running") return;
+  if (!soundOn || !actx || actx.state !== "running") return;
   const t = actx.currentTime + when, o = actx.createOscillator(), g = actx.createGain();
   o.type = "square"; o.frequency.setValueAtTime(f, t);
   g.gain.setValueAtTime(.03, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
   o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d + .02);
 }
 const jingle = () => [523, 659, 784, 1047, 784, 1047].forEach((f, i) => beep(f, .13, i * .11));
+
+/* ---------- μουσική (YouTube) ---------- */
+let yt = null, ytReady = false, ytWant = false, ytIdx = 0, ytFailed = false;
+const musicBtn = $("music");
+(function loadYT() {
+  const s = document.createElement("script");
+  s.src = "https://www.youtube.com/iframe_api";
+  s.onerror = () => { ytFailed = true; markIntroReady(); };
+  document.head.appendChild(s);
+})();
+window.onYouTubeIframeAPIReady = () => {
+  const id = CONFIG.music.youtube[0];
+  yt = new YT.Player("yt", {
+    width: 200, height: 200, videoId: id,
+    playerVars: { autoplay: 0, controls: 1, playsinline: 1, loop: 1, playlist: id, rel: 0, origin: location.origin },
+    events: {
+      onReady: () => { ytReady = true; yt.setVolume(CONFIG.music.volume); markIntroReady(); if (ytWant) playMusic(); },
+      onStateChange: e => {
+        if (e.data === YT.PlayerState.ENDED) { yt.seekTo(0); yt.playVideo(); }
+        if (e.data === YT.PlayerState.PLAYING) { musicBtn.classList.remove("nudge"); setTimeout(() => ytwrap.classList.remove("show"), 600); }
+        updateMusicBtn();
+      },
+      onError: () => {
+        ytIdx++;
+        const next = CONFIG.music.youtube[ytIdx];
+        if (next) { yt.loadVideoById(next); }
+        else { ytFailed = true; musicBtn.classList.add("nudge"); updateMusicBtn(); }
+      },
+    },
+  });
+};
+function isPlaying() { return ytReady && yt.getPlayerState && yt.getPlayerState() === 1; }
+let musicCheck = 0;
+function playMusic() {
+  ytWant = true;
+  if (!ytReady || ytFailed) return;
+  yt.unMute(); yt.setVolume(CONFIG.music.volume); yt.playVideo();
+  // αν σε 2.5" δεν παίζει (π.χ. iPhone), δείξε κουμπί να το ξεκινήσουν με το χέρι
+  clearTimeout(musicCheck);
+  musicCheck = setTimeout(() => {
+    if (soundOn && ytWant && !isPlaying()) musicBtn.classList.add("nudge");
+    updateMusicBtn();
+  }, 2500);
+}
+const ytwrap = document.getElementById("ytwrap");
+document.getElementById("ytx").onclick = () => ytwrap.classList.remove("show");
+function pauseMusic() { ytWant = false; if (ytReady) yt.pauseVideo(); }
+function updateMusicBtn() {
+  const on = soundOn && (isPlaying() || (ytWant && !ytFailed));
+  musicBtn.classList.toggle("on", on);
+  $("musicLabel").textContent = soundOn ? "♫" : "OFF";
+}
+musicBtn.onclick = () => {
+  if (musicBtn.classList.contains("nudge") || (soundOn && ytWant && !isPlaying())) {
+    // δεν ξεκίνησε μόνη της: ξαναδοκίμασε και δείξε το player για να πατήσουν ▶
+    musicBtn.classList.remove("nudge");
+    soundOn = true; playMusic();
+    if (ytFailed) { window.open("https://www.youtube.com/watch?v=" + CONFIG.music.youtube[0], "_blank"); return; }
+    setTimeout(() => { if (!isPlaying()) ytwrap.classList.add("show"); }, 700);
+    updateMusicBtn(); return;
+  }
+  soundOn = !soundOn;
+  soundOn ? playMusic() : pauseMusic();
+  updateMusicBtn(); buzz(15);
+};
+// σταματάει όταν κλείνει η οθόνη / αλλάζει app, ξαναπαίζει όταν γυρίσεις
+document.addEventListener("visibilitychange", () => {
+  if (!ytReady) return;
+  if (document.hidden) yt.pauseVideo();
+  else if (soundOn && ytWant) yt.playVideo();
+});
 
 /* ---------- οθόνες ---------- */
 const state = { choice: null, noCount: 0 };
@@ -406,8 +504,12 @@ function show(id) {
   scrollTo({ top: 0, behavior: "smooth" });
 }
 
-$("open").onclick = () => {
-  unlockAudio();
+const openBtn = $("open");
+function markIntroReady() { openBtn.textContent = "ΑΝΟΙΞΕ ▶"; }
+openBtn.textContent = "...";
+setTimeout(markIntroReady, 3500);            // αν αργεί το YouTube, προχώρα χωρίς να περιμένεις
+openBtn.onclick = () => {
+  unlockAudio(); playMusic(); updateMusicBtn();
   setTimeout(() => { beep(523, .08); beep(784, .12, .08); }, 30);
   buzz(20);
   show("s-ask");
@@ -439,7 +541,7 @@ function dodge(px, py, force) {
   yes.style.setProperty("--s", Math.min(1 + state.noCount * .07, 1.6).toFixed(2));
 
   const nr = no.getBoundingClientRect();
-  const avoid = [yes, document.querySelector("#s-ask h1")].map(el => el.getBoundingClientRect());
+  const avoid = [yes, document.querySelector("#s-ask h1"), musicBtn].map(el => el.getBoundingClientRect());
   const hits = (x, y) => avoid.some(a => x < a.right + 14 && x + nr.width > a.left - 14 && y < a.bottom + 14 && y + nr.height > a.top - 14);
   const W = innerWidth, H = innerHeight, pad = 12;
   const far = Math.min(200, Math.min(W, H) / 3);
@@ -461,7 +563,7 @@ document.addEventListener("pointermove", e => {
     dodge(e.clientX, e.clientY);
 });
 document.addEventListener("touchstart", e => {
-  if (!askActive() || e.target.closest("#yes")) return;
+  if (!askActive() || e.target.closest("#yes, #music")) return;
   const t = e.touches[0], r = no.getBoundingClientRect(), m = 40;
   if (t.clientX > r.left - m && t.clientX < r.right + m && t.clientY > r.top - m && t.clientY < r.bottom + m) {
     if (e.target === no && e.cancelable) e.preventDefault();
@@ -482,6 +584,7 @@ addEventListener("resize", () => {
 });
 
 yes.onclick = () => {
+  if (!isPlaying() && soundOn) playMusic();
   beep(660, .1); beep(990, .14, .1); buzz([20, 40, 20]);
   confetti(30);
   show("s-place");
@@ -547,7 +650,7 @@ function calLink(d) {
   return "https://calendar.google.com/calendar/render?" + q;
 }
 function textFor(d) {
-  return `💕 ${CONFIG.her || "Είπε"} ΝΑΙ στο ραντεβού!\n` +
+  return `💕 ΝΑΙ στο ραντεβού!\n` +
     `Επιλογή: ${d.choice.emoji} ${d.choice.name}\n` +
     `Μέρα: ${niceDate(d.date)}\n` +
     `Ώρα: ${d.time}` +
@@ -560,7 +663,7 @@ async function notify(d) {
     method: "POST",
     body: JSON.stringify({
       topic: CONFIG.ntfyTopic,
-      title: `💕 ${CONFIG.her || "Ραντεβού"}: ${d.choice.emoji} ${d.choice.name} · ${niceDate(d.date)} ${d.time}`,
+      title: `💕 Ραντεβού: ${d.choice.emoji} ${d.choice.name} · ${niceDate(d.date)} ${d.time}`,
       message: `Επιλογή: ${d.choice.emoji} ${d.choice.name}\nΜέρα: ${niceDate(d.date)}\nΏρα: ${d.time}` +
         (d.msg ? `\nΜήνυμα: ${d.msg}` : "") +
         `\nΠροσπάθειες να πατήσει το ΟΧΙ: ${state.noCount}`,
@@ -585,11 +688,13 @@ $("form").addEventListener("submit", async e => {
   if (!d.time) { fail("Διάλεξε ώρα!"); return; }
   err.textContent = "";
 
-  send.disabled = true; send.textContent = "ΣΤΕΛΝΕΤΑΙ...";
+  const mobile = /iP(hone|ad|od)|Android/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   let note = "";
-  try { await notify(d); note = "💌 το έμαθα ήδη!"; }
-  catch (ex) { note = CONFIG.phone ? "δεν έφτασε η ειδοποίηση 😬 πάτα το SMS από κάτω" : "κάτι δεν πήγε καλά με την ειδοποίηση 😬 στείλε μου ένα μήνυμα!"; }
-  send.disabled = false; send.textContent = "ΚΛΕΙΣΤΗΚΕ 💌";
+  if (CONFIG.ntfyTopic) notify(d).catch(() => {});
+  if (CONFIG.phone) {
+    if (mobile) location.href = smsLink(d);   // ανοίγει τα Μηνύματα με έτοιμο SMS
+    note = "📱 πάτα αποστολή στο SMS για να το μάθω!";
+  }
 
   const sm = $("summary");
   sm.innerHTML = "";
