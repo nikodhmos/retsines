@@ -269,6 +269,7 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
     <p class="note" id="doneNote"></p>
     <div class="btns">
       <a class="btn blue small" id="cal" target="_blank" rel="noopener">📅 ΣΤΟ ΗΜΕΡΟΛΟΓΙΟ</a>
+      <a class="btn small" id="msgBtn" style="display:none" target="_blank" rel="noopener">📱 ΣΤΕΙΛ' ΤΟ</a>
       <button class="btn ghost small" id="again" type="button">↺ ΑΠΟ ΤΗΝ ΑΡΧΗ</button>
     </div>
   </section>
@@ -307,6 +308,8 @@ const DEST = (() => {
       f: typeof o.f === "string" ? o.f.trim().slice(0, 30) : "",
       n: typeof o.n === "string" && /^[A-Za-z0-9_-]{6,64}$/.test(o.n) ? o.n : "",
       e: typeof o.e === "string" && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(o.e) ? o.e : "",
+      p: typeof o.p === "string" && /^\d{8,15}$/.test(o.p) ? o.p : "",
+      m: o.m === "w" ? "w" : "s",
     };
   } catch (e) { return {}; }
 })();
@@ -712,6 +715,17 @@ async function sendNtfy(d) {
   });
   if (!res.ok) throw new Error("HTTP " + res.status);
 }
+/* ---------- έτοιμο SMS / WhatsApp προς αυτόν που έστειλε το link ---------- */
+function replyText(d) {
+  return `🍷 ΝΑΙ για ρετσίνες!\nΌνομα: ${d.name}\nΜέρος: ${d.place.name}\nΜέρα: ${niceDate(d.date)}\nΏρα: ${d.time}` +
+    (d.msg ? `\nΜήνυμα: ${d.msg}` : "");
+}
+function replyLink(d) {
+  const t = encodeURIComponent(replyText(d));
+  if (DEST.m === "w") return `https://wa.me/${DEST.p}?text=${t}`;
+  const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  return `sms:+${DEST.p}${ios ? "&" : "?"}body=${t}`;
+}
 function mailtoLink(d) {
   const body = `Όνομα: ${d.name}\nΜέρος: ${d.place.name}\nΗμερομηνία: ${niceDate(d.date)}\nΏρα: ${d.time}\nΜήνυμα: ${d.msg || "-"}`;
   return `mailto:${MAIL_TO}?subject=${encodeURIComponent("🍷 Ρετσίνες!")}&body=${encodeURIComponent(body)}`;
@@ -729,8 +743,19 @@ $("form").addEventListener("submit", async e => {
   if (!d.time) { fail("Διάλεξε ώρα!"); return; }
   err.textContent = "";
 
-  send.disabled = true; send.textContent = "ΣΤΕΛΝΕΤΑΙ...";
   let note = "";
+  const mb = $("msgBtn");
+  mb.style.display = "none";
+  if (DEST.p) {
+    // ανοίγει έτοιμο μήνυμα (πρέπει να γίνει μέσα στο ίδιο πάτημα)
+    const url = replyLink(d);
+    mb.href = url; mb.style.display = "";
+    mb.textContent = DEST.m === "w" ? "💬 ΣΤΕΙΛ' ΤΟ ΣΤΟ WHATSAPP" : "📱 ΣΤΕΙΛ' ΤΟ ΜΕ SMS";
+    if (DEST.m === "w") window.open(url, "_blank"); else location.href = url;
+    const who = DEST.f ? " στον/στην " + DEST.f.replace(/[<>&"]/g, "") : "";
+    note = `📱 πάτα <b>αποστολή</b> στο μήνυμα για να φτάσει${who}!`;
+  } else {
+  send.disabled = true; send.textContent = "ΣΤΕΛΝΕΤΑΙ...";
   try {
     if (DEST.n) { await sendNtfy(d); note = "🍷 στάλθηκε!"; }
     else { await sendMail(d); note = "✉ στάλθηκε!"; }
@@ -744,6 +769,7 @@ $("form").addEventListener("submit", async e => {
       : `Το mail δεν έφυγε 😬 <a href="${mailtoLink(d)}">στείλ' το από εδώ</a><small>${why}</small>`;
   }
   send.disabled = false; send.textContent = "ΣΤΕΙΛ' ΤΟ 🍷";
+  }
 
   const t = $("doneText");
   t.textContent = "";
@@ -757,6 +783,7 @@ $("form").addEventListener("submit", async e => {
 });
 
 $("again").onclick = () => {
+  $("msgBtn").style.display = "none";
   state.noCount = 0; hint.innerHTML = "&nbsp;";
   no.classList.remove("flying"); no.style.left = no.style.top = ""; no.textContent = "ΟΧΙ";
   $("btns").appendChild(no); yes.style.setProperty("--s", 1);

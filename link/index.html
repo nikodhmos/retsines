@@ -201,6 +201,7 @@ code{font-family:'Tiny5',monospace; font-size:18px; background:#fff; padding:8px
   box-shadow:0 -3px 0 var(--ink), 0 3px 0 var(--ink), -3px 0 0 var(--ink), 3px 0 0 var(--ink)}
 #test{margin-top:6px}
 .chip{font-size:18px}
+.modehint{font-size:18px; color:#7a6a8a; margin:10px 4px 0}
 </style>
 </head>
 <body>
@@ -221,7 +222,13 @@ code{font-family:'Tiny5',monospace; font-size:18px; background:#fff; padding:8px
       <div class="chips" id="modes">
         <button type="button" class="chip on" data-v="ntfy">📱 Ειδοποίηση στο κινητό</button>
         <button type="button" class="chip" data-v="email">✉ Email</button>
+        <button type="button" class="chip" data-v="sms">💬 SMS</button>
+        <button type="button" class="chip" data-v="wa">🟢 WhatsApp</button>
       </div>
+      <p class="modehint" id="modeHint"></p>
+      <label id="phoneWrap" style="display:none">Το κινητό σου
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="69xxxxxxxx">
+      </label>
       <label id="emailWrap" style="display:none">Το email σου
         <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com">
       </label>
@@ -238,6 +245,10 @@ code{font-family:'Tiny5',monospace; font-size:18px; background:#fff; padding:8px
       <p><b>2.</b> Πάτα <b>+</b> και κάνε subscribe σε αυτό:</p>
       <div class="copyrow"><code id="topic"></code><button class="btn ghost small" type="button" id="copyTopic">ΑΝΤΙΓΡΑΦΗ</button></div>
       <p><b>3.</b> Πάτα δοκιμή και δες αν σου ήρθε:</p>
+    </div>
+    <div id="msgSteps" class="steps" style="display:none">
+      <p>Δεν χρειάζεται να κάνεις τίποτα άλλο 🙌</p>
+      <p>Όποιος πει ΝΑΙ, θα του ανοίξει έτοιμο <b id="msgKind"></b> προς το <b id="msgPhone"></b> και θα πατήσει απλά <b>αποστολή</b>.</p>
     </div>
     <div id="emailSteps" class="steps" style="display:none">
       <p><b>1.</b> Πάτα δοκιμή. Θα σου έρθει mail από <b>FormSubmit</b> (κοίτα και στα spam).</p>
@@ -284,13 +295,29 @@ document.querySelectorAll("#modes .chip").forEach(c => c.onclick = () => {
   mode = c.dataset.v;
   document.querySelectorAll("#modes .chip").forEach(x => x.classList.toggle("on", x === c));
   $("emailWrap").style.display = mode === "email" ? "" : "none";
+  $("phoneWrap").style.display = mode === "sms" || mode === "wa" ? "" : "none";
+  $("modeHint").textContent = HINTS[mode];
 });
+const HINTS = {
+  ntfy: "αυτόματα, θέλει το δωρεάν app ntfy",
+  email: "αυτόματα, θέλει μια ενεργοποίηση την πρώτη φορά",
+  sms: "χωρίς τίποτα, αλλά ο άλλος πατάει «αποστολή»",
+  wa: "χωρίς τίποτα, αλλά ο άλλος πατάει «αποστολή» στο WhatsApp",
+};
+$("modeHint").textContent = HINTS.ntfy;
+function normPhone(v) {
+  let d = v.replace(/[^\d+]/g, "");
+  if (d.startsWith("+")) d = d.slice(1);
+  else if (d.startsWith("00")) d = d.slice(2);
+  else if (/^(69|2)\d{8}$/.test(d)) d = "30" + d;   // ελληνικό χωρίς κωδικό χώρας
+  return /^\d{10,15}$/.test(d) ? d : "";
+}
 
 function show(id) { document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id)); scrollTo({ top: 0 }); }
 
 function linkFor(c) {
   const r = { f: c.f };
-  if (c.n) r.n = c.n; else r.e = c.e;
+  if (c.n) r.n = c.n; else if (c.p) { r.p = c.p; r.m = c.m; } else r.e = c.e;
   return new URL("../", location.href).href + "?r=" + enc(r);
 }
 
@@ -298,6 +325,10 @@ function ready(c) {
   cfg = c;
   $("ntfySteps").style.display = c.n ? "" : "none";
   $("emailSteps").style.display = c.e ? "" : "none";
+  $("msgSteps").style.display = c.p ? "" : "none";
+  $("test").style.display = c.p ? "none" : "";
+  $("msgKind").textContent = c.m === "w" ? "μήνυμα στο WhatsApp" : "SMS";
+  $("msgPhone").textContent = c.p ? "+" + c.p : "";
   $("topic").textContent = c.n || "";
   $("link").textContent = linkFor(c);
   $("testNote").textContent = "";
@@ -309,8 +340,12 @@ $("form").addEventListener("submit", e => {
   const f = $("name").value.trim(), em = $("email").value.trim();
   if (!f) { $("err").textContent = "Γράψε το όνομά σου!"; return; }
   if (mode === "email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { $("err").textContent = "Γράψε σωστό email!"; return; }
+  const ph = normPhone($("phone").value);
+  if ((mode === "sms" || mode === "wa") && !ph) { $("err").textContent = "Γράψε σωστό κινητό!"; return; }
   $("err").textContent = "";
-  const c = mode === "ntfy" ? { f, n: newTopic() } : { f, e: em };
+  const c = mode === "ntfy" ? { f, n: newTopic() }
+    : mode === "email" ? { f, e: em }
+    : { f, p: ph, m: mode === "wa" ? "w" : "s" };
   store.set(c);
   ready(c);
 });
@@ -352,7 +387,7 @@ $("test").onclick = async () => {
 };
 
 const saved = store.get();
-if (saved && saved.f && (saved.n || saved.e)) ready(saved);
+if (saved && saved.f && (saved.n || saved.e || saved.p)) ready(saved);
 </script>
 </body>
 </html>
