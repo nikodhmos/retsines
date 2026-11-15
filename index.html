@@ -227,10 +227,17 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
     <p class="hint" id="hint">&nbsp;</p>
   </section>
 
-  <!-- 2. Πού -->
-  <section class="screen" id="s-place">
+  <!-- 2. Τι -->
+  <section class="screen" id="s-drink">
     <h2>Τέλεια!!</h2>
-    <p class="sub">Πού πάμε;</p>
+    <p class="sub">Τι λέει;</p>
+    <div class="places" id="drinks"></div>
+  </section>
+
+  <!-- 3. Πού -->
+  <section class="screen" id="s-place">
+    <h2 id="drinkTitle">Πού;</h2>
+    <p class="sub">Πού πάμε; · <a href="#" id="changeDrink">αλλαγή</a></p>
     <div class="places" id="places"></div>
   </section>
 
@@ -284,9 +291,19 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
    ========================================================= */
 const CONFIG = {
   email: "thomasgioav@gmail.com",       // εδώ έρχονται οι απαντήσεις
+  // Τι θα κάνουμε → σε ποια μέρη (ids από το places παρακάτω)
+  drinks: [
+    { id: "krasi",    name: "Κρασί",    emoji: "🍷", gia: "για κρασί",    sprite: "wine",   sub: "κοκκινάκι",   places: ["bit", "rotonda"] },
+    { id: "mpyra",    name: "Μπύρα",    emoji: "🍺", gia: "για μπύρες",   sprite: "beer",   sub: "παγωμένη",    places: ["lefkos", "magkazi"] },
+    { id: "volta",    name: "Βόλτα",    emoji: "🚶", gia: "για βόλτα",    sprite: "walk",   sub: "χαλαρά",      places: ["bit", "rotonda"] },
+    { id: "retsines", name: "Ρετσίνες", emoji: "🍾", gia: "για ρετσίνες", sprite: "bottle", sub: "οι κλασικές", places: ["bit", "rotonda"] },
+  ],
+  // name = όπως γράφεται, acc = μετά το «στο/στη/στον»
   places: [
-    { id: "bit",    name: "Bit",    article: "στο",  sprite: "lantern", sub: "κλασικά" },
-    { id: "kamara", name: "Καμάρα", article: "στην", sprite: "arch",    sub: "πάντα καλή" },
+    { id: "bit",     name: "Bit",     acc: "Bit",     article: "στο",  sprite: "lantern", sub: "κλασικά" },
+    { id: "rotonda", name: "Ροτόντα", acc: "Ροτόντα", article: "στη",  sprite: "rotonda", sub: "πάντα καλή" },
+    { id: "lefkos",  name: "Λευκός",  acc: "Λευκό",   article: "στον", sprite: "tower",   sub: "μπυρίτσες" },
+    { id: "magkazi", name: "Μαγκάζι", acc: "Μαγκάζι", article: "στο",  sprite: "shop",    sub: "μπυρίτσες" },
   ],
   times: ["20:00", "21:00", "22:00", "23:00"],
   music: {
@@ -398,6 +415,78 @@ const SPRITES = {
     "ssnnnnnnnnnnss",
     "sSnnnnnnnnnnSs",
     "GGGGGGGGGGGGGG",
+  ],
+  wine: [
+    "..kkkkkk..",
+    ".kcccccck.",
+    ".kRRRRRRk.",
+    ".krrrrrrk.",
+    "..krrrrk..",
+    "...kkkk...",
+    "....kk....",
+    "....kk....",
+    "....kk....",
+    "..kkkkkk..",
+  ],
+  beer: [
+    "..wwwww....",
+    ".wwwwwwww..",
+    "kkkkkkkkk..",
+    "kyyyyoyykkk",
+    "kyyyyyyyk.k",
+    "kyoyyyyyk.k",
+    "kyyyyyoyk.k",
+    "kyyyyyyykkk",
+    "kyyoyyyyk..",
+    "kkkkkkkkk..",
+  ],
+  walk: [
+    "....kkk.....",
+    "....kbbk....",
+    "....kbbbk...",
+    "...kbbbbbk..",
+    "..kbbwbbbbkk",
+    ".kbbbbbbbbbk",
+    "kwwwwwwwwwwk",
+    "kkkkkkkkkkkk",
+  ],
+  rotonda: [
+    "......kk......",
+    ".....kyyk.....",
+    "....kssssk....",
+    "...kssssssk...",
+    "..kssssssssk..",
+    ".kkkkkkkkkkkk.",
+    ".ksnsnsnsnsnk.",
+    ".ksnsnsnsnsnk.",
+    ".ksnsnsnsnsnk.",
+    "kkkkkkkkkkkkkk",
+    "kSSSSSSSSSSSSk",
+  ],
+  tower: [
+    "....kkkk....",
+    "...kwwwwk...",
+    "..kkkkkkkk..",
+    "..kwwwwwwk..",
+    "..kwwnwwwk..",
+    "..kwwwwwwk..",
+    "..kwwwwnwk..",
+    "..kwwwwwwk..",
+    "..kwnwwwwk..",
+    "..kwwwwwwk..",
+    "kkkkkkkkkkkk",
+  ],
+  shop: [
+    "kkkkkkkkkkkk",
+    "krrwwrrwwrrk",
+    "krrwwrrwwrrk",
+    ".kkkkkkkkkk.",
+    ".keeeeeeeek.",
+    ".kennnekkek.",
+    ".kennnekyek.",
+    ".kennnekyek.",
+    ".keeeeekyek.",
+    "kkkkkkkkkkkk",
   ],
   moon: [
     "...mmmm...",
@@ -528,7 +617,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 /* ---------- οθόνες ---------- */
-const state = { place: null, noCount: 0 };
+const state = { drink: null, place: null, noCount: 0 };
 function show(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
   no.style.visibility = id === "s-ask" ? "" : "hidden";
@@ -622,22 +711,31 @@ yes.onclick = () => {
   if (!isPlaying() && soundOn) playMusic();
   beep(660, .1); beep(990, .14, .1); buzz([20, 40, 20]);
   confetti(30);
-  show("s-place");
+  show("s-drink");
 };
 
-/* ---------- μέρη ---------- */
-CONFIG.places.forEach(p => {
+/* ---------- τι & πού ---------- */
+function card(o, onclick) {
   const b = document.createElement("button");
   b.className = "place"; b.type = "button";
-  b.innerHTML = `<canvas data-sprite="${p.sprite}" data-scale="8"></canvas><span>${p.name}</span><small>${p.sub || ""}</small>`;
-  b.onclick = () => {
+  b.innerHTML = `<canvas data-sprite="${o.sprite}" data-scale="8"></canvas><span>${o.name}</span><small>${o.sub || ""}</small>`;
+  paint(b.querySelector("canvas"));
+  b.onclick = onclick;
+  return b;
+}
+CONFIG.drinks.forEach(dr => $("drinks").appendChild(card(dr, () => {
+  state.drink = dr; beep(784, .08); beep(1047, .1, .08); buzz(20);
+  $("drinkTitle").textContent = `${dr.emoji} ${dr.name}!`;
+  const box = $("places"); box.innerHTML = "";
+  dr.places.map(id => CONFIG.places.find(p => p.id === id)).filter(Boolean).forEach(p => box.appendChild(card(p, () => {
     state.place = p; beep(784, .08); beep(1047, .1, .08); buzz(20);
-    $("placeLabel").textContent = p.name;
+    $("placeLabel").textContent = `${dr.emoji} ${dr.name} · ${p.name}`;
     show("s-when");
-  };
-  $("places").appendChild(b);
-});
-$("changePlace").onclick = e => { e.preventDefault(); show("s-place"); };
+  })));
+  show("s-place");
+})));
+$("changeDrink").onclick = e => { e.preventDefault(); show("s-drink"); };
+$("changePlace").onclick = e => { e.preventDefault(); show("s-drink"); };
 
 /* ---------- ημερομηνία & ώρα ---------- */
 const p2 = n => String(n).padStart(2, "0");
@@ -679,9 +777,9 @@ function calLink(d) {
   const s = new Date(Y, M - 1, D, h, mi), e = new Date(s.getTime() + 3 * 36e5);
   const f = x => `${x.getFullYear()}${p2(x.getMonth() + 1)}${p2(x.getDate())}T${p2(x.getHours())}${p2(x.getMinutes())}00`;
   const q = new URLSearchParams({
-    action: "TEMPLATE", text: `🍷 Ρετσίνες ${d.place.article} ${d.place.name}`,
+    action: "TEMPLATE", text: `${d.drink.emoji} ${d.drink.name} ${d.place.article} ${d.place.acc}`,
     dates: `${f(s)}/${f(e)}`, ctz: "Europe/Athens", location: d.place.name,
-    details: "Θέλετε να πάμε για ρετσίνες; — ΝΑΙ!",
+    details: `Θέλετε να πάμε για ρετσίνες; — ΝΑΙ! (${d.drink.name})`,
   });
   return "https://calendar.google.com/calendar/render?" + q;
 }
@@ -692,9 +790,9 @@ async function sendMail(d) {
     method: "POST",
     headers: { "Content-Type": "application/json", "Accept": "application/json" },
     body: JSON.stringify({
-      _subject: `🍷 Ρετσίνες: ${d.name} → ${d.place.name}, ${niceDate(d.date)} ${d.time}`,
+      _subject: `${d.drink.emoji} ${d.drink.name}: ${d.name} → ${d.place.name}, ${niceDate(d.date)} ${d.time}`,
       _template: "table", _captcha: "false",
-      "Όνομα": d.name, "Μέρος": d.place.name, "Ημερομηνία": niceDate(d.date), "Ώρα": d.time,
+      "Όνομα": d.name, "Τι": d.drink.name, "Μέρος": d.place.name, "Ημερομηνία": niceDate(d.date), "Ώρα": d.time,
       "Μήνυμα": d.msg || "-", "Προσπάθειες να πατήσει το ΟΧΙ": String(state.noCount),
     }),
   });
@@ -707,8 +805,8 @@ async function sendNtfy(d) {
     method: "POST",
     body: JSON.stringify({
       topic: DEST.n,
-      title: `🍷 ${d.name} → ${d.place.name}, ${niceDate(d.date)} ${d.time}`,
-      message: `Όνομα: ${d.name}\nΜέρος: ${d.place.name}\nΗμερομηνία: ${niceDate(d.date)}\nΏρα: ${d.time}` +
+      title: `${d.drink.emoji} ${d.name} → ${d.drink.name} ${d.place.article} ${d.place.acc}, ${niceDate(d.date)} ${d.time}`,
+      message: `Όνομα: ${d.name}\nΤι: ${d.drink.emoji} ${d.drink.name}\nΜέρος: ${d.place.name}\nΗμερομηνία: ${niceDate(d.date)}\nΏρα: ${d.time}` +
         (d.msg ? `\nΜήνυμα: ${d.msg}` : "") + `\nΠροσπάθειες να πατήσει το ΟΧΙ: ${state.noCount}`,
       tags: ["wine_glass"], priority: 5,
     }),
@@ -717,7 +815,7 @@ async function sendNtfy(d) {
 }
 /* ---------- έτοιμο SMS / WhatsApp προς αυτόν που έστειλε το link ---------- */
 function replyText(d) {
-  return `🍷 ΝΑΙ για ρετσίνες!\nΌνομα: ${d.name}\nΜέρος: ${d.place.name}\nΜέρα: ${niceDate(d.date)}\nΏρα: ${d.time}` +
+  return `${d.drink.emoji} ΝΑΙ ${d.drink.gia}!\nΌνομα: ${d.name}\nΤι: ${d.drink.name}\nΜέρος: ${d.place.name}\nΜέρα: ${niceDate(d.date)}\nΏρα: ${d.time}` +
     (d.msg ? `\nΜήνυμα: ${d.msg}` : "");
 }
 function replyLink(d) {
@@ -727,7 +825,7 @@ function replyLink(d) {
   return `sms:+${DEST.p}${ios ? "&" : "?"}body=${t}`;
 }
 function mailtoLink(d) {
-  const body = `Όνομα: ${d.name}\nΜέρος: ${d.place.name}\nΗμερομηνία: ${niceDate(d.date)}\nΏρα: ${d.time}\nΜήνυμα: ${d.msg || "-"}`;
+  const body = `Όνομα: ${d.name}\nΤι: ${d.drink.name}\nΜέρος: ${d.place.name}\nΗμερομηνία: ${niceDate(d.date)}\nΏρα: ${d.time}\nΜήνυμα: ${d.msg || "-"}`;
   return `mailto:${MAIL_TO}?subject=${encodeURIComponent("🍷 Ρετσίνες!")}&body=${encodeURIComponent(body)}`;
 }
 
@@ -735,7 +833,7 @@ $("form").addEventListener("submit", async e => {
   e.preventDefault();
   document.activeElement && document.activeElement.blur();   // κλείνει το πληκτρολόγιο
   const err = $("err"), send = $("send");
-  const d = { name: $("name").value.trim(), date: dateIn.value, time: timeIn.value, msg: $("msg").value.trim(), place: state.place };
+  const d = { name: $("name").value.trim(), date: dateIn.value, time: timeIn.value, msg: $("msg").value.trim(), place: state.place, drink: state.drink };
   const fail = m => { err.textContent = m; beep(150, .2); buzz([60, 40, 60]); };
   if (!d.name) { fail("Πες μας ποιος/ποια είσαι!"); return; }
   if (!d.date) { fail("Διάλεξε μέρα!"); return; }
@@ -774,7 +872,7 @@ $("form").addEventListener("submit", async e => {
   const t = $("doneText");
   t.textContent = "";
   t.append(`${d.name}, τα λέμε ${d.place.article} `);
-  const b = document.createElement("b"); b.textContent = d.place.name; t.append(b);
+  const b = document.createElement("b"); b.textContent = d.place.acc; t.append(b, ` ${d.drink.gia} ${d.drink.emoji}`);
   t.append(document.createElement("br"), `${niceDate(d.date)} στις ${d.time}!`);
   $("doneNote").innerHTML = note;
   $("cal").href = calLink(d);
