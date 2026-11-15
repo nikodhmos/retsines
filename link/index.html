@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Φτιάξε το δικό σου link 🍷</title>
-<meta name="description" content="Θέλετε να πάμε για ρετσίνες;">
-<meta property="og:title" content="Θέλετε να πάμε για ρετσίνες; 🍷">
+<meta name="description" content="Θες να βγούμε έξω σήμερα;">
+<meta property="og:title" content="Θες να βγούμε έξω σήμερα; 🍷">
 <meta property="og:description" content="Έχεις μια πρόσκληση! Πάτα να την ανοίξεις.">
 <meta name="theme-color" content="#0d0d26">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -362,7 +362,7 @@ $("copyTopic").onclick = e => copy(cfg.n, e.currentTarget);
 $("copyLink").onclick = e => copy(linkFor(cfg), e.currentTarget);
 $("share").onclick = async e => {
   const url = linkFor(cfg);
-  if (navigator.share) { try { await navigator.share({ title: "Θέλετε να πάμε για ρετσίνες; 🍷", url }); } catch (x) {} }
+  if (navigator.share) { try { await navigator.share({ title: "Θες να βγούμε έξω σήμερα; 🍷", url }); } catch (x) {} }
   else copy(url, e.currentTarget);
 };
 $("redo").onclick = e => { e.preventDefault(); store.clear(); show("s-make"); };

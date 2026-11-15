@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ρετσίνες; 🍷</title>
-<meta name="description" content="Θέλετε να πάμε για ρετσίνες;">
-<meta property="og:title" content="Θέλετε να πάμε για ρετσίνες; 🍷">
+<title>Βγαίνουμε; 🍷</title>
+<meta name="description" content="Θες να βγούμε έξω σήμερα;">
+<meta property="og:title" content="Θες να βγούμε έξω σήμερα; 🍷">
 <meta property="og:description" content="Έχεις μια πρόσκληση! Πάτα να την ανοίξεις.">
 <meta name="theme-color" content="#0d0d26">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -218,7 +218,7 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
   <!-- 1. Η ερώτηση -->
   <section class="screen" id="s-ask">
     <canvas class="bob" data-sprite="bottle" data-scale="7" style="height:140px; width:auto"></canvas>
-    <h1>Θέλετε να πάμε για <span class="hl">ρετσίνες</span>;</h1>
+    <h1>Θες να βγούμε <span class="hl">έξω</span> σήμερα;</h1>
     <p class="sub">διάλεξε σοφά...</p>
     <div class="btns" id="btns">
       <button class="btn yes" id="yes" type="button">ΝΑΙ!</button>
@@ -818,7 +818,7 @@ function calLink(d) {
   const q = new URLSearchParams({
     action: "TEMPLATE", text: `${d.drink.emoji} ${d.drink.name} ${d.place.article} ${d.place.acc}`,
     dates: `${f(s)}/${f(e)}`, ctz: "Europe/Athens", location: d.place.name,
-    details: `Θέλετε να πάμε για ρετσίνες; — ΝΑΙ! (${d.drink.name})`,
+    details: `Θες να βγούμε έξω σήμερα; — ΝΑΙ! (${d.drink.name})`,
   });
   return "https://calendar.google.com/calendar/render?" + q;
 }
