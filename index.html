@@ -208,6 +208,7 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
   <section class="screen active" id="s-intro">
     <canvas class="bob sprite-xl" data-sprite="envelope" data-scale="8" style="height:110px"></canvas>
     <h1>Έχεις μια<br><span class="hl">πρόσκληση!</span></h1>
+    <p class="sub" id="fromLine" style="display:none">από: <b id="fromName"></b></p>
     <p class="sub">🔊 δυνάμωσε τον ήχο</p>
     <div class="btns">
       <button class="btn gold" id="open" type="button">ΑΝΟΙΞΕ ▶</button>
@@ -274,7 +275,7 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
 
 </main>
 
-<footer>φτιαγμένο με ♥ και ρετσίνα</footer>
+<footer>φτιαγμένο με ♥ και ρετσίνα · <a href="link/" style="color:#f2c14e">φτιάξε το δικό σου link</a></footer>
 
 <script>
 /* =========================================================
@@ -293,6 +294,23 @@ const CONFIG = {
     volume: 70,
   },
 };
+
+/* ---------- σε ποιον πάει η απάντηση (προσωπικά links από το link/) ---------- */
+// ?r=... = base64url JSON { f: όνομα αποστολέα, n: ntfy topic | e: email }
+const DEST = (() => {
+  try {
+    const k = new URLSearchParams(location.search).get("r");
+    if (!k) return {};
+    const b = k.replace(/-/g, "+").replace(/_/g, "/");
+    const o = JSON.parse(decodeURIComponent(escape(atob(b + "===".slice((b.length + 3) % 4))))) || {};
+    return {
+      f: typeof o.f === "string" ? o.f.trim().slice(0, 30) : "",
+      n: typeof o.n === "string" && /^[A-Za-z0-9_-]{6,64}$/.test(o.n) ? o.n : "",
+      e: typeof o.e === "string" && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(o.e) ? o.e : "",
+    };
+  } catch (e) { return {}; }
+})();
+const MAIL_TO = DEST.e || CONFIG.email;
 
 /* ---------- pixel art ---------- */
 const PAL = {
@@ -667,7 +685,7 @@ function calLink(d) {
 
 /* ---------- αποστολή στο mail (FormSubmit) ---------- */
 async function sendMail(d) {
-  const res = await fetch(`https://formsubmit.co/ajax/${CONFIG.email}`, {
+  const res = await fetch(`https://formsubmit.co/ajax/${MAIL_TO}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Accept": "application/json" },
     body: JSON.stringify({
@@ -680,9 +698,23 @@ async function sendMail(d) {
   const j = await res.json().catch(() => ({}));
   if (!res.ok || String(j.success) !== "true") throw new Error(j.message || "HTTP " + res.status);
 }
+/* ---------- αποστολή στο κινητό (ntfy) ---------- */
+async function sendNtfy(d) {
+  const res = await fetch("https://ntfy.sh/", {
+    method: "POST",
+    body: JSON.stringify({
+      topic: DEST.n,
+      title: `🍷 ${d.name} → ${d.place.name}, ${niceDate(d.date)} ${d.time}`,
+      message: `Όνομα: ${d.name}\nΜέρος: ${d.place.name}\nΗμερομηνία: ${niceDate(d.date)}\nΏρα: ${d.time}` +
+        (d.msg ? `\nΜήνυμα: ${d.msg}` : "") + `\nΠροσπάθειες να πατήσει το ΟΧΙ: ${state.noCount}`,
+      tags: ["wine_glass"], priority: 5,
+    }),
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+}
 function mailtoLink(d) {
   const body = `Όνομα: ${d.name}\nΜέρος: ${d.place.name}\nΗμερομηνία: ${niceDate(d.date)}\nΏρα: ${d.time}\nΜήνυμα: ${d.msg || "-"}`;
-  return `mailto:${CONFIG.email}?subject=${encodeURIComponent("🍷 Ρετσίνες!")}&body=${encodeURIComponent(body)}`;
+  return `mailto:${MAIL_TO}?subject=${encodeURIComponent("🍷 Ρετσίνες!")}&body=${encodeURIComponent(body)}`;
 }
 
 $("form").addEventListener("submit", async e => {
@@ -699,11 +731,16 @@ $("form").addEventListener("submit", async e => {
 
   send.disabled = true; send.textContent = "ΣΤΕΛΝΕΤΑΙ...";
   let note = "";
-  try { await sendMail(d); note = "✉ στάλθηκε!"; }
+  try {
+    if (DEST.n) { await sendNtfy(d); note = "🍷 στάλθηκε!"; }
+    else { await sendMail(d); note = "✉ στάλθηκε!"; }
+  }
   catch (ex) {
     const why = String(ex.message || ex).replace(/[<>&]/g, "");
-    note = /activ/i.test(why)
-      ? `Η φόρμα θέλει ενεργοποίηση: άνοιξε το ${CONFIG.email} (κοίτα και στα spam) και πάτα «Activate Form». <a href="${mailtoLink(d)}">ή στείλ' το με mail</a>`
+    note = DEST.n
+      ? `Η ειδοποίηση δεν έφτασε 😬 στείλε ένα μήνυμα${DEST.f ? " στον/στην " + DEST.f.replace(/[<>&"]/g, "") : ""} με τα παραπάνω!`
+      : /activ/i.test(why)
+      ? `Η φόρμα θέλει ενεργοποίηση: άνοιξε το ${MAIL_TO} (κοίτα και στα spam) και πάτα «Activate Form». <a href="${mailtoLink(d)}">ή στείλ' το με mail</a>`
       : `Το mail δεν έφυγε 😬 <a href="${mailtoLink(d)}">στείλ' το από εδώ</a><small>${why}</small>`;
   }
   send.disabled = false; send.textContent = "ΣΤΕΙΛ' ΤΟ 🍷";
@@ -745,6 +782,7 @@ function confetti(n) {
 }
 
 document.querySelectorAll("canvas[data-sprite]").forEach(paint);
+if (DEST.f) { $("fromName").textContent = DEST.f; $("fromLine").style.display = ""; }
 
 // Αν ανοίχτηκε σαν αρχείο από τον υπολογιστή, ούτε η μουσική ούτε το mail δουλεύουν
 if (location.protocol === "file:") {
