@@ -295,8 +295,8 @@ const CONFIG = {
   // Ειδοποίηση στο κινητό μέσω ntfy.sh (δωρεάν, χωρίς λογαριασμό).
   // Κατέβασε το app «ntfy» και κάνε Subscribe σε αυτό το topic:
   ntfyTopic: "rantevou-9f2b4e9e7d",
-  // Το κινητό σου: στο τέλος της ανοίγει έτοιμο SMS προς εσένα με όλα τα στοιχεία
-  phone: "+306971565618",
+  // Προαιρετικό: κινητό για έτοιμο SMS στο τέλος (κενό = μόνο ειδοποίηση ntfy)
+  phone: "",
   options: [
     { id: "food",  name: "ΦΑΓΗΤΟ", emoji: "🍝", sprite: "pasta",    sub: "κάτι νόστιμο" },
     { id: "drink", name: "ΠΟΤΟ",   emoji: "🍸", sprite: "cocktail", sub: "κάτι δροσερό" },
@@ -690,11 +690,11 @@ $("form").addEventListener("submit", async e => {
 
   const mobile = /iP(hone|ad|od)|Android/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   let note = "";
-  if (CONFIG.ntfyTopic) notify(d).catch(() => {});
-  if (CONFIG.phone) {
-    if (mobile) location.href = smsLink(d);   // ανοίγει τα Μηνύματα με έτοιμο SMS
-    note = "📱 πάτα αποστολή στο SMS για να το μάθω!";
-  }
+  if (CONFIG.phone && mobile) location.href = smsLink(d);
+  send.disabled = true; send.textContent = "ΣΤΕΛΝΕΤΑΙ...";
+  try { await notify(d); note = "💌 το έμαθα ήδη!"; }
+  catch (ex) { note = "κάτι δεν πήγε καλά με την ειδοποίηση 😬 στείλε μου ένα μήνυμα!"; }
+  send.disabled = false; send.textContent = "ΚΛΕΙΣΤΗΚΕ 💌";
 
   const sm = $("summary");
   sm.innerHTML = "";
