@@ -283,7 +283,7 @@ for (let i = 0; i < 60; i++) {
 }
 
 const enc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-const API = "https://rantevou-api.nikodimos03.workers.dev";
+const API = "https://rantevou.nikodimos03.workers.dev";
 const store = {
   get() { try { return JSON.parse(localStorage.getItem("retsines-link") || "null"); } catch (e) { return null; } },
   set(v) { try { localStorage.setItem("retsines-link", JSON.stringify(v)); } catch (e) {} },
