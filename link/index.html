@@ -228,8 +228,6 @@ code{font-family:'Tiny5',monospace; font-size:18px; background:#fff; padding:8px
       <div class="chips" id="modes">
         <button type="button" class="chip on" data-v="ntfy">📱 Ειδοποίηση στο κινητό</button>
         <button type="button" class="chip" data-v="email">✉ Email</button>
-        <button type="button" class="chip" data-v="sms">💬 SMS</button>
-        <button type="button" class="chip" data-v="wa">🟢 WhatsApp</button>
       </div>
       <p class="modehint" id="modeHint"></p>
       <label id="phoneWrap" style="display:none">Το κινητό σου
@@ -406,7 +404,7 @@ $("test").onclick = async () => {
 };
 
 const saved = store.get();
-if (saved && saved.f && (saved.code || saved.t)) ready(saved); else store.clear();
+if (saved && saved.f && (saved.code || saved.t) && !saved.p) ready(saved); else store.clear();
 </script>
 </body>
 </html>

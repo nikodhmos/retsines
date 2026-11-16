@@ -890,7 +890,7 @@ $("form").addEventListener("submit", async e => {
   let note = "";
   const mb = $("msgBtn");
   mb.style.display = "none";
-  if (DEST.p) {
+  if (false && DEST.p) {
     // ανοίγει έτοιμο μήνυμα (πρέπει να γίνει μέσα στο ίδιο πάτημα)
     const url = replyLink(d);
     mb.href = url; mb.style.display = "";
@@ -901,12 +901,12 @@ $("form").addEventListener("submit", async e => {
   } else {
   send.disabled = true; send.textContent = "ΣΤΕΛΝΕΤΑΙ...";
   try {
-    if (DEST.t || DEST.c) { await sendNtfy(d); note = "🍷 στάλθηκε!"; }
-    else { await sendMail(d); note = "✉ στάλθηκε!"; }
+    if (DEST.e) { await sendMail(d); note = "✉ στάλθηκε!"; }
+    else { await sendNtfy(d); note = "🍷 στάλθηκε!"; }
   }
   catch (ex) {
     const why = String(ex.message || ex).replace(/[<>&]/g, "");
-    note = (DEST.t || DEST.c)
+    note = !DEST.e
       ? `Η ειδοποίηση δεν έφτασε 😬 στείλε ένα μήνυμα${DEST.f ? " στον/στην " + DEST.f.replace(/[<>&"]/g, "") : ""} με τα παραπάνω!`
       : /activ/i.test(why)
       ? `Η φόρμα θέλει ενεργοποίηση: άνοιξε το ${MAIL_TO} (κοίτα και στα spam) και πάτα «Activate Form». <a href="${mailtoLink(d)}">ή στείλ' το με mail</a>`
