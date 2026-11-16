@@ -7,6 +7,12 @@
 <meta name="description" content="Θες να βγούμε έξω σήμερα;">
 <meta property="og:title" content="Θες να βγούμε έξω σήμερα; 🍷">
 <meta property="og:description" content="Έχεις μια πρόσκληση! Πάτα να την ανοίξεις.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nikodhmos.github.io/retsines/">
+<meta property="og:image" content="https://nikodhmos.github.io/retsines/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0d0d26">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍷</text></svg>">
@@ -335,7 +341,7 @@ const DEST = (() => {
     };
   } catch (e) { return {}; }
 })();
-const MAIL_TO = DEST.e || CONFIG.email;
+let MAIL_TO = DEST.e || CONFIG.email;
 
 /* ---------- pixel art ---------- */
 const PAL = {
@@ -849,7 +855,7 @@ async function apiSend(payload) {
   if (!res.ok || !j.ok) throw new Error(j.error || "HTTP " + res.status);
 }
 async function sendNtfy(d) {
-  await apiSend({ kind: "retsines", r: DEST.t, name: d.name, date: d.date, time: d.time,
+  await apiSend({ kind: "retsines", c: DEST.c || undefined, r: DEST.t || undefined, name: d.name, date: d.date, time: d.time,
     msg: d.msg, drink: d.drink.id, place: d.place.id, noCount: state.noCount });
 }
 /* ---------- έτοιμο SMS / WhatsApp προς αυτόν που έστειλε το link ---------- */
@@ -870,6 +876,7 @@ function mailtoLink(d) {
 
 $("form").addEventListener("submit", async e => {
   e.preventDefault();
+  await destReady;
   document.activeElement && document.activeElement.blur();   // κλείνει το πληκτρολόγιο
   const err = $("err"), send = $("send");
   const d = { name: $("name").value.trim(), date: dateIn.value, time: timeIn.value, msg: $("msg").value.trim(), place: state.place, drink: state.drink };
@@ -894,12 +901,12 @@ $("form").addEventListener("submit", async e => {
   } else {
   send.disabled = true; send.textContent = "ΣΤΕΛΝΕΤΑΙ...";
   try {
-    if (DEST.t) { await sendNtfy(d); note = "🍷 στάλθηκε!"; }
+    if (DEST.t || DEST.c) { await sendNtfy(d); note = "🍷 στάλθηκε!"; }
     else { await sendMail(d); note = "✉ στάλθηκε!"; }
   }
   catch (ex) {
     const why = String(ex.message || ex).replace(/[<>&]/g, "");
-    note = DEST.t
+    note = (DEST.t || DEST.c)
       ? `Η ειδοποίηση δεν έφτασε 😬 στείλε ένα μήνυμα${DEST.f ? " στον/στην " + DEST.f.replace(/[<>&"]/g, "") : ""} με τα παραπάνω!`
       : /activ/i.test(why)
       ? `Η φόρμα θέλει ενεργοποίηση: άνοιξε το ${MAIL_TO} (κοίτα και στα spam) και πάτα «Activate Form». <a href="${mailtoLink(d)}">ή στείλ' το με mail</a>`
@@ -946,7 +953,22 @@ function confetti(n) {
 }
 
 document.querySelectorAll("canvas[data-sprite]").forEach(paint);
-if (DEST.f) { $("fromName").textContent = DEST.f; $("fromLine").style.display = ""; }
+
+/* ---------- κοντά links (?nikos-k7p) ---------- */
+const CODE = (() => { const q = location.search.slice(1).split("&")[0]; return /^[a-z0-9]{1,12}-[a-z0-9]{3}$/.test(q) ? q : ""; })();
+function showFrom() { if (DEST.f) { $("fromName").textContent = DEST.f; $("fromLine").style.display = ""; } }
+const destReady = !CODE ? Promise.resolve() :
+  fetch(API + "/resolve", { method: "POST", body: JSON.stringify({ c: CODE }) })
+    .then(r => r.json()).then(j => {
+      if (!j.ok || j.site !== "retsines") return;
+      DEST.f = j.f;
+      if (j.mode === "ntfy") DEST.c = CODE;
+      else if (j.mode === "email") { DEST.e = j.e; MAIL_TO = j.e; }
+      else if (j.p) { DEST.p = j.p; DEST.m = j.mode === "wa" ? "w" : "s"; }
+      showFrom();
+    }).catch(() => {});
+showFrom();
+
 
 // Αν ανοίχτηκε σαν αρχείο από τον υπολογιστή, ούτε η μουσική ούτε το mail δουλεύουν
 if (location.protocol === "file:") {

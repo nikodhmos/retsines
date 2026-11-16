@@ -7,6 +7,12 @@
 <meta name="description" content="Θες να βγούμε έξω σήμερα;">
 <meta property="og:title" content="Θες να βγούμε έξω σήμερα; 🍷">
 <meta property="og:description" content="Έχεις μια πρόσκληση! Πάτα να την ανοίξεις.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nikodhmos.github.io/retsines/">
+<meta property="og:image" content="https://nikodhmos.github.io/retsines/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0d0d26">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍷</text></svg>">
@@ -316,6 +322,7 @@ function normPhone(v) {
 function show(id) { document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id)); scrollTo({ top: 0 }); }
 
 function linkFor(c) {
+  if (c.code) return new URL("../", location.href).href + "?" + c.code;
   const r = { f: c.f };
   if (c.t) r.t = c.t; else if (c.p) { r.p = c.p; r.m = c.m; } else r.e = c.e;
   return new URL("../", location.href).href + "?r=" + enc(r);
@@ -323,7 +330,7 @@ function linkFor(c) {
 
 function ready(c) {
   cfg = c;
-  $("ntfySteps").style.display = c.t ? "" : "none";
+  $("ntfySteps").style.display = c.t || c.mode === "ntfy" ? "" : "none";
   $("emailSteps").style.display = c.e ? "" : "none";
   $("msgSteps").style.display = c.p ? "" : "none";
   $("test").style.display = c.p ? "none" : "";
@@ -343,19 +350,21 @@ $("form").addEventListener("submit", async e => {
   const ph = normPhone($("phone").value);
   if ((mode === "sms" || mode === "wa") && !ph) { $("err").textContent = "Γράψε σωστό κινητό!"; return; }
   $("err").textContent = "";
+  const btn = $("form").querySelector("button[type=submit]");
+  btn.disabled = true;
   let c;
-  if (mode === "ntfy") {
-    const btn = $("form").querySelector("button[type=submit]");
-    btn.disabled = true;
-    try {
-      const r = await fetch(API + "/new", { method: "POST", body: "{}" });
-      const j = await r.json();
-      if (!j.ok) throw new Error(j.error || "HTTP " + r.status);
-      c = { f, t: j.token, topic: j.topic };
-    } catch (x) { $("err").textContent = "Δεν έγινε 😬 " + String(x.message || "").slice(0, 60); btn.disabled = false; return; }
-    btn.disabled = false;
-  } else c = mode === "email" ? { f, e: em }
-    : { f, p: ph, m: mode === "wa" ? "w" : "s" };
+  try {
+    const body = { site: "retsines", f, mode };
+    if (mode === "email") body.e = em;
+    if (mode === "sms" || mode === "wa") body.p = ph;
+    const r = await fetch(API + "/new", { method: "POST", body: JSON.stringify(body) });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || "HTTP " + r.status);
+    c = { f, mode, code: j.code, topic: j.topic, t: j.token };
+    if (mode === "email") c.e = em;
+    if (mode === "sms" || mode === "wa") { c.p = ph; c.m = mode === "wa" ? "w" : "s"; }
+  } catch (x) { $("err").textContent = "Δεν έγινε 😬 " + String(x.message || "").slice(0, 60); btn.disabled = false; return; }
+  btn.disabled = false;
   store.set(c);
   ready(c);
 });
@@ -380,8 +389,8 @@ $("redo").onclick = e => { e.preventDefault(); store.clear(); show("s-make"); };
 $("test").onclick = async () => {
   const n = $("testNote"); n.textContent = "στέλνεται...";
   try {
-    if (cfg.t) {
-      const r = await fetch(API + "/test", { method: "POST", body: JSON.stringify({ r: cfg.t }) });
+    if (cfg.t || cfg.mode === "ntfy") {
+      const r = await fetch(API + "/test", { method: "POST", body: JSON.stringify(cfg.code ? { c: cfg.code } : { r: cfg.t }) });
       const j = await r.json().catch(() => ({}));
       if (!j.ok) throw new Error(j.error || "HTTP " + r.status);
       n.textContent = "✔ στάλθηκε, κοίτα το κινητό σου!";
@@ -397,7 +406,7 @@ $("test").onclick = async () => {
 };
 
 const saved = store.get();
-if (saved && saved.f && (saved.t || saved.e || saved.p)) ready(saved); else store.clear();
+if (saved && saved.f && (saved.code || saved.t)) ready(saved); else store.clear();
 </script>
 </body>
 </html>
