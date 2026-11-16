@@ -328,7 +328,7 @@ const DEST = (() => {
     const o = JSON.parse(decodeURIComponent(escape(atob(b + "===".slice((b.length + 3) % 4))))) || {};
     return {
       f: typeof o.f === "string" ? o.f.trim().slice(0, 30) : "",
-      n: typeof o.n === "string" && /^[A-Za-z0-9_-]{6,64}$/.test(o.n) ? o.n : "",
+      t: typeof o.t === "string" && /^[A-Za-z0-9_-]{20,200}$/.test(o.t) ? o.t : "",
       e: typeof o.e === "string" && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(o.e) ? o.e : "",
       p: typeof o.p === "string" && /^\d{8,15}$/.test(o.p) ? o.p : "",
       m: o.m === "w" ? "w" : "s",
@@ -838,19 +838,19 @@ async function sendMail(d) {
   const j = await res.json().catch(() => ({}));
   if (!res.ok || String(j.success) !== "true") throw new Error(j.message || "HTTP " + res.status);
 }
-/* ---------- αποστολή στο κινητό (ntfy) ---------- */
-async function sendNtfy(d) {
-  const res = await fetch("https://ntfy.sh/", {
+/* ---------- αποστολή μέσω του Worker (τα topics είναι κρυφά εκεί) ---------- */
+const API = "https://rantevou-api.nikodimos03.workers.dev";
+async function apiSend(payload) {
+  const res = await fetch(API + "/send", {
     method: "POST",
-    body: JSON.stringify({
-      topic: DEST.n,
-      title: `${d.drink.emoji} ${d.name} → ${d.drink.name} ${d.place.article} ${d.place.acc}, ${niceDate(d.date)} ${d.time}`,
-      message: `Όνομα: ${d.name}\nΤι: ${d.drink.emoji} ${d.drink.name}\nΜέρος: ${d.place.name}\nΗμερομηνία: ${niceDate(d.date)}\nΏρα: ${d.time}` +
-        (d.msg ? `\nΜήνυμα: ${d.msg}` : "") + `\nΠροσπάθειες να πατήσει το ΟΧΙ: ${state.noCount}`,
-      tags: ["wine_glass"], priority: 5,
-    }),
+    body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("HTTP " + res.status);
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok || !j.ok) throw new Error(j.error || "HTTP " + res.status);
+}
+async function sendNtfy(d) {
+  await apiSend({ kind: "retsines", r: DEST.t, name: d.name, date: d.date, time: d.time,
+    msg: d.msg, drink: d.drink.id, place: d.place.id, noCount: state.noCount });
 }
 /* ---------- έτοιμο SMS / WhatsApp προς αυτόν που έστειλε το link ---------- */
 function replyText(d) {
@@ -894,12 +894,12 @@ $("form").addEventListener("submit", async e => {
   } else {
   send.disabled = true; send.textContent = "ΣΤΕΛΝΕΤΑΙ...";
   try {
-    if (DEST.n) { await sendNtfy(d); note = "🍷 στάλθηκε!"; }
+    if (DEST.t) { await sendNtfy(d); note = "🍷 στάλθηκε!"; }
     else { await sendMail(d); note = "✉ στάλθηκε!"; }
   }
   catch (ex) {
     const why = String(ex.message || ex).replace(/[<>&]/g, "");
-    note = DEST.n
+    note = DEST.t
       ? `Η ειδοποίηση δεν έφτασε 😬 στείλε ένα μήνυμα${DEST.f ? " στον/στην " + DEST.f.replace(/[<>&"]/g, "") : ""} με τα παραπάνω!`
       : /activ/i.test(why)
       ? `Η φόρμα θέλει ενεργοποίηση: άνοιξε το ${MAIL_TO} (κοίτα και στα spam) και πάτα «Activate Form». <a href="${mailtoLink(d)}">ή στείλ' το με mail</a>`
