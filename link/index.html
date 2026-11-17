@@ -224,6 +224,9 @@ code{font-family:'Tiny5',monospace; font-size:18px; background:#fff; padding:8px
       <label>Το όνομά σου
         <input id="name" maxlength="30" placeholder="θα το βλέπουν όσοι το ανοίγουν" autocomplete="given-name">
       </label>
+      <label>Ένα μήνυμα στην πρόσκληση <small>(προαιρετικό)</small>
+        <textarea id="note" rows="3" maxlength="200" placeholder="π.χ. Έλα, έχουμε καιρό να τα πούμε..."></textarea>
+      </label>
       <label>Πού να σου έρχονται οι απαντήσεις;</label>
       <div class="chips" id="modes">
         <button type="button" class="chip on" data-v="ntfy">📱 Ειδοποίηση στο κινητό</button>
@@ -353,6 +356,8 @@ $("form").addEventListener("submit", async e => {
   let c;
   try {
     const body = { site: "retsines", f, mode };
+    const note = $("note").value.trim();
+    if (note) body.note = note;
     if (mode === "email") body.e = em;
     if (mode === "sms" || mode === "wa") body.p = ph;
     const r = await fetch(API + "/new", { method: "POST", body: JSON.stringify(body) });

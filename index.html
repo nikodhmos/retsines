@@ -189,6 +189,52 @@ h2.big{font-size:clamp(22px,7vw,32px); margin-bottom:12px}
 .confetti{position:fixed; top:-12px; z-index:40; pointer-events:none; animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 
+.btn.wide{white-space:normal; line-height:1.6; overflow-wrap:anywhere}
+.btn.givenup{animation:giveup .9s steps(9) 1}
+@keyframes giveup{0%{transform:rotate(0)}30%{transform:rotate(-20deg) translateY(-10px)}60%{transform:rotate(12deg) translateY(6px)}100%{transform:none}}
+.hidden{display:none !important}
+.ok{font-family:'Press Start 2P',monospace; font-size:clamp(13px,4vw,17px); line-height:1.7; color:var(--gold2); margin:2px 0 6px}
+.letter{position:relative; margin:4px 6px 14px; padding:16px 16px 12px; text-align:left; background:#fff;
+  font-size:22px; line-height:1.3; transform:rotate(-1.2deg);
+  box-shadow:0 -4px 0 var(--ink), 0 4px 0 var(--ink), -4px 0 0 var(--ink), 4px 0 0 var(--ink), inset -4px -4px 0 #f1e2b8}
+.letter p{margin:0; white-space:pre-wrap; word-break:break-word}
+.letter .sig{margin-top:8px; text-align:right; color:var(--gold2); font-size:20px}
+.summary{display:inline-block; text-align:left; margin:14px auto 4px; font-size:22px; line-height:1.35;
+  background:#fff; padding:12px 16px;
+  box-shadow:0 -4px 0 var(--ink), 0 4px 0 var(--ink), -4px 0 0 var(--ink), 4px 0 0 var(--ink), inset -4px -4px 0 #e4dccb}
+.summary b{color:var(--red)}
+.countdown{display:flex; justify-content:center; gap:10px; margin:10px 0 16px; flex-wrap:wrap}
+.countdown .cd{min-width:76px; padding:10px 6px; background:#fff; text-align:center;
+  box-shadow:0 -4px 0 var(--ink), 0 4px 0 var(--ink), -4px 0 0 var(--ink), 4px 0 0 var(--ink), inset -4px -4px 0 #e4dccb}
+.countdown .cd b{display:block; font-family:'Press Start 2P',monospace; font-size:24px; color:var(--red)}
+.countdown .cd small{font-size:16px; color:#7a6a8a}
+.countdown .now{font-family:'Press Start 2P',monospace; font-size:16px; color:var(--red); line-height:1.7}
+.chip:disabled{opacity:.35; cursor:not-allowed}
+#timeChips{justify-content:center}
+.err.soft{color:#7a6a8a; min-height:0}
+.dsel{display:flex; justify-content:center; margin:12px 4px 0}
+.dsel select{font-family:inherit; font-size:20px; color:var(--ink); background:#f3e6c4; border:0; border-radius:0;
+  padding:10px 14px; width:100%; -webkit-appearance:none; appearance:none; cursor:pointer;
+  box-shadow:0 -3px 0 var(--ink), 0 3px 0 var(--ink), -3px 0 0 var(--ink), 3px 0 0 var(--ink), inset -3px -3px 0 #d9c99e}
+.dsel select.on{background:var(--gold)}
+.confirm{margin-top:6px; text-align:center}
+.sec{text-align:left; margin:18px 0 6px; padding:14px 14px 16px; background:rgba(255,255,255,.45);
+  box-shadow:0 -3px 0 #e4d3a8, 0 3px 0 #e4d3a8, -3px 0 0 #e4d3a8, 3px 0 0 #e4d3a8}
+.sec h3{font-family:'Press Start 2P',monospace; font-size:13px; line-height:1.6; color:var(--gold2); margin:0 0 4px; display:flex; align-items:center; gap:10px}
+.sec h3 small{font-family:'Tiny5',monospace; font-size:15px; color:#7a6a8a}
+.sec .num{display:inline-grid; place-items:center; width:28px; height:28px; background:var(--gold2); color:#fff; font-size:12px; flex:none;
+  box-shadow:0 -2px 0 var(--ink), 0 2px 0 var(--ink), -2px 0 0 var(--ink), 2px 0 0 var(--ink)}
+.sec label:first-of-type{margin-top:8px}
+.sec textarea{margin-top:10px; width:100%}
+.linkbtn{background:none; border:0; padding:0; margin:0; font:inherit; color:var(--blue); text-decoration:underline; cursor:pointer}
+#changeMind{color:var(--red)}
+.tsel{display:flex; align-items:center; justify-content:center; gap:10px; margin:12px 0 4px}
+.tsel select{font-family:'Press Start 2P',monospace; font-size:26px; color:var(--ink); background:#fff;
+  border:0; border-radius:0; padding:14px 10px; min-width:110px; text-align:center; text-align-last:center;
+  -webkit-appearance:none; appearance:none; cursor:pointer;
+  box-shadow:0 -4px 0 var(--ink), 0 4px 0 var(--ink), -4px 0 0 var(--ink), 4px 0 0 var(--ink), inset -4px -4px 0 #e4dccb}
+.tsel .colon{font-family:'Press Start 2P',monospace; font-size:26px; color:var(--ink)}
+
 footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
 
 @media (max-height:700px){ footer{display:none} .sprite-xl{height:120px} .bob{height:130px} }
@@ -223,6 +269,7 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
 
   <!-- 1. Η ερώτηση -->
   <section class="screen" id="s-ask">
+    <div class="letter hidden" id="letter"><p id="letterText"></p><p class="sig">— <span id="letterFrom"></span></p></div>
     <canvas class="bob" data-sprite="bottle" data-scale="7" style="height:140px; width:auto"></canvas>
     <h1>Θες να βγούμε <span class="hl">έξω</span> σήμερα;</h1>
     <p class="sub">διάλεξε σοφά...</p>
@@ -249,26 +296,52 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
 
   <!-- 3. Πότε -->
   <section class="screen" id="s-when">
-    <h2>Πότε;</h2>
-    <p class="sub">📍 <b id="placeLabel"></b> · <a href="#" id="changePlace">αλλαγή</a></p>
+    <div id="whenHead">
+      <h2>Πότε;</h2>
+      <p class="sub">📍 <b id="placeLabel"></b> · <a href="#" id="changePlace">αλλαγή</a></p>
+    </div>
     <form id="form" novalidate>
-      <label>Όνομα
-        <input id="name" maxlength="40" placeholder="πώς σε λένε;" autocomplete="given-name" enterkeyhint="next">
-      </label>
-      <label>Ημερομηνία
-        <input type="date" id="date">
-      </label>
-      <div class="chips" id="dateChips"></div>
-      <label>Ώρα
-        <input type="time" id="time" value="21:00">
-      </label>
-      <div class="chips" id="timeChips"></div>
-      <label>Κάτι άλλο; <small>(προαιρετικό)</small>
-        <textarea id="msg" rows="2" maxlength="300" placeholder="π.χ. φέρνω και παρέα"></textarea>
-      </label>
+      <div class="sec">
+        <h3><span class="num">1</span> Πες μου για σένα</h3>
+        <label>Όνομα
+          <input id="name" maxlength="40" placeholder="πώς σε λένε;" autocomplete="given-name" enterkeyhint="next">
+        </label>
+        <label>Από πού είσαι;
+          <input id="from" maxlength="40" placeholder="π.χ. Θεσσαλονίκη" autocomplete="address-level2" enterkeyhint="next">
+        </label>
+      </div>
+      <div class="sec">
+        <h3><span class="num">2</span> Πότε;</h3>
+        <label>Μέρα</label>
+        <div class="chips" id="dateChips"></div>
+        <div class="dsel"><select id="dSel" aria-label="Άλλη μέρα"></select></div>
+        <input type="hidden" id="date" value="">
+        <label>Ώρα <small>(πάτα πάνω για άλλη ώρα)</small></label>
+        <div class="tsel">
+          <select id="hSel" aria-label="Ώρα"></select>
+          <span class="colon">:</span>
+          <select id="mSel" aria-label="Λεπτά"></select>
+        </div>
+        <input type="hidden" id="time" value="21:00">
+        <div class="chips" id="timeChips"></div>
+        <p class="err soft" id="timeNote"></p>
+      </div>
+      <div class="sec">
+        <h3><span class="num">3</span> Κάτι άλλο; <small>(προαιρετικό)</small></h3>
+        <textarea id="msg" rows="2" maxlength="300" placeholder="π.χ. φέρνω και παρέα" aria-label="Κάτι άλλο"></textarea>
+      </div>
       <button class="btn wide" type="submit" id="send">ΣΤΕΙΛ' ΤΟ 🍷</button>
       <p class="err" id="err"></p>
     </form>
+    <div class="confirm hidden" id="confirm">
+      <h2>Τα κλείνουμε; 🍷</h2>
+      <p class="sub">δες αν είναι όλα σωστά</p>
+      <div class="summary" id="confirmSum"></div>
+      <div class="btns">
+        <button class="btn" type="button" id="confirmYes">ΝΑΙ, ΣΤΕΙΛ' ΤΟ 🍷</button>
+        <button class="btn ghost small" type="button" id="confirmNo">✏️ ΑΛΛΑΓΗ</button>
+      </div>
+    </div>
   </section>
 
   <!-- 4. Γεια μας -->
@@ -279,12 +352,24 @@ footer{margin-top:26px; font-size:17px; color:#b9b3d9; text-align:center}
     </div>
     <h2 class="hl big">ΓΕΙΑ ΜΑΣ!</h2>
     <p class="sub" id="doneText"></p>
+    <div class="summary" id="summary"></div>
     <p class="note" id="doneNote"></p>
     <div class="btns">
+      <button class="btn gold small" type="button" id="ticketBtn">⬇️ ΚΑΤΕΒΑΣΕ ΤΟ ΕΙΣΙΤΗΡΙΟ</button>
       <a class="btn blue small" id="cal" target="_blank" rel="noopener">📅 ΣΤΟ ΗΜΕΡΟΛΟΓΙΟ</a>
-      <a class="btn small" id="msgBtn" style="display:none" target="_blank" rel="noopener">📱 ΣΤΕΙΛ' ΤΟ</a>
-      <button class="btn ghost small" id="again" type="button">↺ ΑΠΟ ΤΗΝ ΑΡΧΗ</button>
     </div>
+    <p class="note"><button type="button" class="linkbtn" id="changeMind">↺ άλλαξα γνώμη</button></p>
+  </section>
+
+  <section class="screen" id="s-again">
+    <canvas class="bob" data-sprite="bottle" data-scale="5" style="height:100px; width:auto; margin:0 auto"></canvas>
+    <p class="ok" id="againLead">Βγαίνουμε σε</p>
+    <div class="countdown" id="countdown"></div>
+    <div class="summary" id="againSum"></div>
+    <div class="btns">
+      <button class="btn gold small" type="button" id="againTicket">⬇️ ΤΟ ΕΙΣΙΤΗΡΙΟ</button>
+    </div>
+    <p class="note"><button type="button" class="linkbtn" id="againChange">↺ άλλαξα γνώμη</button> · <button type="button" class="linkbtn" id="againIntro">δες ξανά την πρόσκληση</button></p>
   </section>
 
 </main>
@@ -299,10 +384,10 @@ const CONFIG = {
   email: "thomasgioav@gmail.com",       // εδώ έρχονται οι απαντήσεις
   // Τι θα κάνουμε → σε ποια μέρη (ids από το places παρακάτω)
   drinks: [
-    { id: "krasi",    name: "Κρασί",    emoji: "🍷", gia: "για κρασί",    sprite: "wine",   sub: "κοκκινάκι",   places: ["bit", "rotonda"] },
-    { id: "mpyra",    name: "Μπύρα",    emoji: "🍺", gia: "για μπύρες",   sprite: "beer",   sub: "παγωμένη",    places: ["lefkos", "magkazi"] },
-    { id: "volta",    name: "Βόλτα",    emoji: "🚶", gia: "για βόλτα",    sprite: "walk",   sub: "χαλαρά",      places: ["paralia", "ompreles", "kastra", "aristotelous"] },
-    { id: "retsines", name: "Ρετσίνες", emoji: "🍾", gia: "για ρετσίνες", sprite: "bottle", sub: "οι κλασικές", places: ["bit", "rotonda"] },
+    { id: "krasi",    name: "Κρασί",    emoji: "🍷", gia: "για κρασί",    sprite: "wine",   sub: "κοκκινάκι",   places: ["bit", "rotonda"], times: ["20:00", "21:00", "22:00"], def: "21:00", from: "19:00", to: "01:00", hint: "π.χ. ένα κοκκινάκι με τυράκια 🧀" },
+    { id: "mpyra",    name: "Μπύρα",    emoji: "🍺", gia: "για μπύρες",   sprite: "beer",   sub: "παγωμένη",    places: ["lefkos", "magkazi"], times: ["21:00", "22:00", "23:00"], def: "21:00", from: "19:00", to: "01:00", hint: "π.χ. φέρνω και παρέα" },
+    { id: "volta",    name: "Βόλτα",    emoji: "🚶", gia: "για βόλτα",    sprite: "walk",   sub: "χαλαρά",      places: ["paralia", "ompreles", "kastra", "aristotelous"], times: ["12:00", "18:00", "20:00"], def: "18:00", from: "10:00", to: "23:30", hint: "π.χ. να πάρουμε κι ένα παγωτό 🍦" },
+    { id: "retsines", name: "Ρετσίνες", emoji: "🍾", gia: "για ρετσίνες", sprite: "bottle", sub: "οι κλασικές", places: ["bit", "rotonda"], times: ["14:00", "21:00", "22:00"], def: "21:00", from: "13:00", to: "01:00", hint: "π.χ. με μεζεδάκια 🫒" },
   ],
   // name = όπως γράφεται, acc = μετά το «στο/στη/στον»
   places: [
@@ -316,7 +401,7 @@ const CONFIG = {
     { id: "kastra",       name: "Κάστρα",       acc: "Κάστρα",       article: "στα",  sprite: "castle",   sub: "θέα όλη η πόλη" },
     { id: "aristotelous", name: "Αριστοτέλους", acc: "Αριστοτέλους", article: "στην", sprite: "arch",     sub: "κέντρο" },
   ],
-  times: ["20:00", "21:00", "22:00", "23:00"],
+  // κάθε επιλογή έχει τις δικές της λογικές ώρες (times = γρήγορα κουμπιά, from–to = τι επιτρέπεται)
   music: {
     // Δημήτρης Μητροπάνος – Τα Λαδάδικα (επίσημο YouTube). Το δεύτερο είναι εφεδρικό.
     youtube: ["8a94DSC10sA", "86jw8pPubVM"],
@@ -687,9 +772,22 @@ const NO_TEXTS = ["Σίγουρα;", "Ξανασκέψου το", "Χαχα όχ
   "Μην επιμένεις", "Είναι παγωμένη!", "Ούτε για πλάκα", "Άσ' το", "Έλα τώρα", "Πάτα το ΝΑΙ"];
 const HINTS = { 1: "ε όχι 🙂", 3: "το ΟΧΙ είναι διακοσμητικό", 6: "σε βλέπω που προσπαθείς 👀",
   10: "οκ φτάνει, πάτα το ΝΑΙ", 15: "θα το γράψω στο mail πόσες φορές προσπάθησες..." };
-let lastDodge = 0;
+const GIVE_UP = 15;
+let lastDodge = 0, gaveUp = false, gaveUpAt = 0;
+// μετά από τόσες προσπάθειες το ΟΧΙ κουράζεται και γίνεται δεύτερο ΝΑΙ
+function noGivesUp() {
+  gaveUp = true; gaveUpAt = performance.now();
+  no.textContent = "ΟΚ, ΝΑΙ 😅";
+  no.classList.remove("no"); no.classList.add("yes", "givenup");
+  const r = no.getBoundingClientRect(), y = $("yes").getBoundingClientRect();
+  no.style.left = Math.max(12, Math.min(innerWidth - r.width - 12, y.left + y.width / 2 - r.width / 2)) + "px";
+  no.style.top = Math.min(innerHeight - r.height - 20, y.bottom + 24) + "px";
+  hint.textContent = "οκ, κέρδισες 😅";
+  beep(330, .12); beep(262, .14, .12); beep(196, .2, .26); buzz([40, 30, 80]);
+}
 
 function dodge(px, py, force) {
+  if (gaveUp) return;
   const now = performance.now();
   if (!force && now - lastDodge < 160) return;
   lastDodge = now;
@@ -702,6 +800,7 @@ function dodge(px, py, force) {
     no.offsetWidth;
   }
   state.noCount++;
+  if (state.noCount >= GIVE_UP) { noGivesUp(); return; }
   no.textContent = NO_TEXTS[(state.noCount - 1) % NO_TEXTS.length];
   if (HINTS[state.noCount]) hint.textContent = HINTS[state.noCount];
   yes.style.setProperty("--s", Math.min(1 + state.noCount * .07, 1.6).toFixed(2));
@@ -724,14 +823,14 @@ const askActive = () => $("s-ask").classList.contains("active");
 
 // ποντίκι (υπολογιστής): φεύγει πριν το φτάσεις
 document.addEventListener("pointermove", e => {
-  if (e.pointerType === "touch" || !askActive()) return;
+  if (gaveUp || e.pointerType === "touch" || !askActive()) return;
   const r = no.getBoundingClientRect(), m = 45;
   if (e.clientX > r.left - m && e.clientX < r.right + m && e.clientY > r.top - m && e.clientY < r.bottom + m)
     dodge(e.clientX, e.clientY);
 });
 // κινητό: αν το δάχτυλο ακουμπήσει κοντά του, φεύγει
 document.addEventListener("touchstart", e => {
-  if (!askActive() || e.target.closest("#yes, #music")) return;
+  if (gaveUp || !askActive() || e.target.closest("#yes, #music")) return;
   const t = e.touches[0], r = no.getBoundingClientRect(), m = 40;
   if (t.clientX > r.left - m && t.clientX < r.right + m && t.clientY > r.top - m && t.clientY < r.bottom + m) {
     if (e.target === no && e.cancelable) e.preventDefault();
@@ -740,11 +839,16 @@ document.addEventListener("touchstart", e => {
 }, { passive: false });
 // σε κάθε περίπτωση, το ΟΧΙ δεν κάνει ποτέ τίποτα
 ["pointerdown", "click"].forEach(ev => no.addEventListener(ev, e => {
+  if (gaveUp) {
+    // το ίδιο πάτημα που το «κούρασε» δεν μετράει σαν ΝΑΙ, πρέπει να το πατήσει ξανά
+    if (ev === "click" && performance.now() - gaveUpAt > 500) yes.onclick();
+    return;
+  }
   e.preventDefault(); e.stopPropagation();
   if (e.pointerType === "touch" || (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents)) return;
   dodge(e.clientX || innerWidth / 2, e.clientY || innerHeight / 2, true);
 }));
-no.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); dodge(innerWidth / 2, innerHeight / 2, true); } });
+no.addEventListener("keydown", e => { if (gaveUp) return; if (e.key === "Enter" || e.key === " ") { e.preventDefault(); dodge(innerWidth / 2, innerHeight / 2, true); } });
 addEventListener("resize", () => {
   if (!no.classList.contains("flying")) return;
   const r = no.getBoundingClientRect();
@@ -775,6 +879,7 @@ CONFIG.drinks.forEach(dr => $("drinks").appendChild(card(dr, () => {
   dr.places.map(id => CONFIG.places.find(p => p.id === id)).filter(Boolean).forEach(p => box.appendChild(card(p, () => {
     state.place = p; beep(784, .08); beep(1047, .1, .08); buzz(20);
     $("placeLabel").textContent = `${dr.emoji} ${dr.name} · ${p.name}`;
+    buildTimeChips(dr.times); setTime(toMin(dr.def)); $("msg").placeholder = dr.hint || "";
     show("s-when");
   })));
   show("s-place");
@@ -782,44 +887,101 @@ CONFIG.drinks.forEach(dr => $("drinks").appendChild(card(dr, () => {
 $("changeDrink").onclick = e => { e.preventDefault(); show("s-drink"); };
 $("changePlace").onclick = e => { e.preventDefault(); show("s-drink"); };
 
-/* ---------- ημερομηνία & ώρα ---------- */
+/* ---------- μέρα & ώρα ---------- */
 const p2 = n => String(n).padStart(2, "0");
 const iso = d => `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
 const dateIn = $("date"), timeIn = $("time");
 const today = new Date(); today.setHours(0, 0, 0, 0);
-dateIn.min = iso(today);
 
-const dateOpts = [["Απόψε", 0], ["Αύριο", 1]];
-[[5, "Παρασκευή"], [6, "Σάββατο"]].forEach(([dow, label]) => {
+const dateOpts = [["Σήμερα", 0], ["Αύριο", 1]];
+[[5, "Παρασκευή"], [6, "Σάββατο"], [0, "Κυριακή"]].forEach(([dow, label]) => {
   const off = (dow - today.getDay() + 7) % 7;
   if (off > 1) dateOpts.push([label, off]);
 });
-function makeChips(el, items, input) {
-  items.forEach(([label, value]) => {
+dateOpts.forEach(([label, off]) => {
+  const d = new Date(today); d.setDate(d.getDate() + off);
+  const c = document.createElement("button");
+  c.type = "button"; c.className = "chip"; c.textContent = label; c.dataset.v = iso(d);
+  c.onclick = () => { dateIn.value = c.dataset.v; setTime(wantT ?? toMin(timeIn.value)); beep(1200, .04); buzz(10); };
+  $("dateChips").appendChild(c);
+});
+// «άλλη μέρα»: λίστα με τις επόμενες 60 μέρες γραμμένες με λέξεις (όχι το ημερολόγιο του κινητού)
+$("dSel").add(new Option("📅 άλλη μέρα…", ""));
+for (let i = 0; i < 60; i++) {
+  const d = new Date(today); d.setDate(d.getDate() + i);
+  const label = d.toLocaleDateString("el-GR", { weekday: "long", day: "numeric", month: "long" });
+  $("dSel").add(new Option(i === 0 ? `Σήμερα, ${label}` : i === 1 ? `Αύριο, ${label}` : label, iso(d)));
+}
+$("dSel").addEventListener("change", () => {
+  if (!$("dSel").value) return;
+  dateIn.value = $("dSel").value; setTime(wantT ?? toMin(timeIn.value)); beep(1200, .04); buzz(10);
+});
+// ώρες πριν τις 06:00 = μετά τα μεσάνυχτα της ίδιας βραδιάς (π.χ. 00:30)
+const toMin = v => { const [h, m] = v.split(":").map(Number); return (h < 6 ? h + 24 : h) * 60 + m; };
+const fromMin = t => `${p2(Math.floor(t / 60) % 24)}:${p2(t % 60)}`;
+const afterMidnight = v => toMin(v) >= 24 * 60;
+const timeLabel = v => afterMidnight(v) ? `${v} (μετά τα μεσάνυχτα)` : v;
+const cur = () => state.drink || CONFIG.drinks[0];
+const optFrom = () => toMin(cur().from || "00:00");
+const optTo = () => toMin(cur().to || "23:55");
+function minAllowed() {
+  let lo = optFrom();
+  if (dateIn.value === iso(new Date())) {
+    const n = new Date();
+    // για σήμερα: τουλάχιστον μισή ώρα από τώρα, σε «στρογγυλή» ώρα (:00, :15, :30, :45)
+    lo = Math.max(lo, Math.ceil((n.getHours() * 60 + n.getMinutes() + 30) / 15) * 15);
+  }
+  return lo;
+}
+let wantT = null;   // η ώρα που ζήτησε (για να μη χάνεται όταν αλλάζει μέρα)
+function setTime(t) {
+  wantT = t;
+  timeIn.value = fromMin(Math.min(optTo(), Math.max(minAllowed(), t)));
+  syncChips();
+}
+function buildTimeChips(times) {
+  const box = $("timeChips"); box.innerHTML = "";
+  times.forEach(t => {
     const c = document.createElement("button");
-    c.type = "button"; c.className = "chip"; c.textContent = label; c.dataset.v = value;
-    c.onclick = () => { input.value = value; syncChips(); beep(1200, .04); buzz(10); };
-    el.appendChild(c);
+    c.type = "button"; c.className = "chip"; c.textContent = t; c.dataset.v = t;
+    c.onclick = () => { setTime(toMin(t)); beep(1200, .04); buzz(10); };
+    box.appendChild(c);
   });
 }
-makeChips($("dateChips"), dateOpts.map(([l, off]) => { const d = new Date(today); d.setDate(d.getDate() + off); return [l, iso(d)]; }), dateIn);
-makeChips($("timeChips"), CONFIG.times.map(t => [t, t]), timeIn);
+buildTimeChips(CONFIG.drinks[0].times);
+// μενού ώρα : λεπτά (απλές λίστες, όχι το ρολόι του κινητού)
+for (let h = 6; h < 30; h++) $("hSel").add(new Option(p2(h % 24), h));   // 06 … 23, 00 … 05
+for (let m = 0; m < 60; m += 5) $("mSel").add(new Option(p2(m), m));
+const fromSel = () => setTime(+$("hSel").value * 60 + +$("mSel").value);
+$("hSel").addEventListener("change", fromSel);
+$("mSel").addEventListener("change", fromSel);
 function syncChips() {
   document.querySelectorAll("#dateChips .chip").forEach(c => c.classList.toggle("on", c.dataset.v === dateIn.value));
-  document.querySelectorAll("#timeChips .chip").forEach(c => c.classList.toggle("on", c.dataset.v === timeIn.value));
+  const chipDate = [...document.querySelectorAll("#dateChips .chip")].some(c => c.dataset.v === dateIn.value);
+  $("dSel").value = dateIn.value && !chipDate ? dateIn.value : "";
+  $("dSel").classList.toggle("on", !!dateIn.value && !chipDate);
+  const lo = minAllowed();
+  const tv = toMin(timeIn.value), sh = Math.floor(tv / 60), sm = tv % 60;
+  $("hSel").value = sh; $("mSel").value = sm - (sm % 5);
+  [...$("hSel").options].forEach(o => { const out = +o.value * 60 + 55 < optFrom() || +o.value * 60 > optTo(); o.hidden = out; o.disabled = out || +o.value * 60 + 55 < lo; });
+  [...$("mSel").options].forEach(o => o.disabled = sh * 60 + +o.value < lo || sh * 60 + +o.value > optTo());
+  document.querySelectorAll("#timeChips .chip").forEach(c => {
+    c.classList.toggle("on", c.dataset.v === timeIn.value);
+    c.disabled = toMin(c.dataset.v) < lo;
+  });
+  $("timeNote").textContent = lo > optTo() ? "Για σήμερα είναι αργά, διάλεξε άλλη μέρα 🙂" : lo > optFrom() ? `Για σήμερα: από ${fromMin(lo)} και μετά` : "";
 }
-dateIn.addEventListener("input", syncChips); dateIn.addEventListener("change", syncChips);
-timeIn.addEventListener("input", syncChips); timeIn.addEventListener("change", syncChips);
 syncChips();
-$("name").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("name").blur(); } });
+$("name").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("from").focus(); } });
+$("from").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("from").blur(); } });
 
 function niceDate(v) {
   const [Y, M, D] = v.split("-").map(Number);
   return new Date(Y, M - 1, D).toLocaleDateString("el-GR", { weekday: "long", day: "numeric", month: "long" });
 }
 function calLink(d) {
-  const [Y, M, D] = d.date.split("-").map(Number), [h, mi] = d.time.split(":").map(Number);
-  const s = new Date(Y, M - 1, D, h, mi), e = new Date(s.getTime() + 3 * 36e5);
+  const [Y, M, D] = d.date.split("-").map(Number);
+  const s = new Date(Y, M - 1, D, 0, toMin(d.time)), e = new Date(s.getTime() + 3 * 36e5);
   const f = x => `${x.getFullYear()}${p2(x.getMonth() + 1)}${p2(x.getDate())}T${p2(x.getHours())}${p2(x.getMinutes())}00`;
   const q = new URLSearchParams({
     action: "TEMPLATE", text: `${d.drink.emoji} ${d.drink.name} ${d.place.article} ${d.place.acc}`,
@@ -835,9 +997,9 @@ async function sendMail(d) {
     method: "POST",
     headers: { "Content-Type": "application/json", "Accept": "application/json" },
     body: JSON.stringify({
-      _subject: `${d.drink.emoji} ${d.drink.name}: ${d.name} → ${d.place.name}, ${niceDate(d.date)} ${d.time}`,
+      _subject: `${d.change ? "🔁 ΑΛΛΑΓΗ · " : ""}${d.drink.emoji} ${d.drink.name}: ${d.name} → ${d.place.name}, ${niceDate(d.date)} ${d.time}`,
       _template: "table", _captcha: "false",
-      "Όνομα": d.name, "Τι": d.drink.name, "Μέρος": d.place.name, "Ημερομηνία": niceDate(d.date), "Ώρα": d.time,
+      "Όνομα": d.name, "Από": d.from, "Τι": d.drink.name, "Μέρος": d.place.name, "Ημερομηνία": niceDate(d.date), "Ώρα": timeLabel(d.time),
       "Μήνυμα": d.msg || "-", "Προσπάθειες να πατήσει το ΟΧΙ": String(state.noCount),
     }),
   });
@@ -855,8 +1017,8 @@ async function apiSend(payload) {
   if (!res.ok || !j.ok) throw new Error(j.error || "HTTP " + res.status);
 }
 async function sendNtfy(d) {
-  await apiSend({ kind: "retsines", c: DEST.c || undefined, r: DEST.t || undefined, name: d.name, date: d.date, time: d.time,
-    msg: d.msg, drink: d.drink.id, place: d.place.id, noCount: state.noCount });
+  await apiSend({ kind: "retsines", c: DEST.c || undefined, r: DEST.t || undefined, name: d.name, from: d.from, date: d.date, time: d.time,
+    msg: d.msg, drink: d.drink.id, place: d.place.id, noCount: state.noCount, change: !!d.change });
 }
 /* ---------- έτοιμο SMS / WhatsApp προς αυτόν που έστειλε το link ---------- */
 function replyText(d) {
@@ -870,7 +1032,7 @@ function replyLink(d) {
   return `sms:+${DEST.p}${ios ? "&" : "?"}body=${t}`;
 }
 function mailtoLink(d) {
-  const body = `Όνομα: ${d.name}\nΤι: ${d.drink.name}\nΜέρος: ${d.place.name}\nΗμερομηνία: ${niceDate(d.date)}\nΏρα: ${d.time}\nΜήνυμα: ${d.msg || "-"}`;
+  const body = `Όνομα: ${d.name}\nΑπό: ${d.from}\nΤι: ${d.drink.name}\nΜέρος: ${d.place.name}\nΗμερομηνία: ${niceDate(d.date)}\nΏρα: ${timeLabel(d.time)}\nΜήνυμα: ${d.msg || "-"}`;
   return `mailto:${MAIL_TO}?subject=${encodeURIComponent("🍷 Ρετσίνες!")}&body=${encodeURIComponent(body)}`;
 }
 
@@ -878,60 +1040,72 @@ $("form").addEventListener("submit", async e => {
   e.preventDefault();
   await destReady;
   document.activeElement && document.activeElement.blur();   // κλείνει το πληκτρολόγιο
-  const err = $("err"), send = $("send");
-  const d = { name: $("name").value.trim(), date: dateIn.value, time: timeIn.value, msg: $("msg").value.trim(), place: state.place, drink: state.drink };
+  const err = $("err");
+  const d = { name: $("name").value.trim(), from: $("from").value.trim(), date: dateIn.value, time: timeIn.value, msg: $("msg").value.trim(), place: state.place, drink: state.drink };
   const fail = m => { err.textContent = m; beep(150, .2); buzz([60, 40, 60]); };
-  if (!d.name) { fail("Πες μας ποιος/ποια είσαι!"); return; }
+  if (!d.name) { fail("Γράψε το όνομά σου!"); return; }
+  if (!d.from) { fail("Πες μου από πού είσαι!"); return; }
   if (!d.date) { fail("Διάλεξε μέρα!"); return; }
   if (d.date < iso(today)) { fail("Στο παρελθόν δεν πάμε (ακόμα)"); return; }
-  if (!d.time) { fail("Διάλεξε ώρα!"); return; }
+  if (toMin(d.time) < minAllowed()) { setTime(toMin(d.time)); fail("Αυτή η ώρα πέρασε, διάλεξε αργότερα"); return; }
+  if (toMin(d.time) > optTo()) { setTime(toMin(d.time)); fail("Διάλεξε ώρα μέχρι " + fromMin(optTo())); return; }
   err.textContent = "";
+  pending = d;
+  fillSummary($("confirmSum"), d);
+  $("form").classList.add("hidden"); $("whenHead").classList.add("hidden"); $("confirm").classList.remove("hidden");
+  scrollTo({ top: 0, behavior: "smooth" });
+  beep(880, .06); buzz(15);
+});
 
-  let note = "";
-  const mb = $("msgBtn");
-  mb.style.display = "none";
-  if (false && DEST.p) {
-    // ανοίγει έτοιμο μήνυμα (πρέπει να γίνει μέσα στο ίδιο πάτημα)
-    const url = replyLink(d);
-    mb.href = url; mb.style.display = "";
-    mb.textContent = DEST.m === "w" ? "💬 ΣΤΕΙΛ' ΤΟ ΣΤΟ WHATSAPP" : "📱 ΣΤΕΙΛ' ΤΟ ΜΕ SMS";
-    if (DEST.m === "w") window.open(url, "_blank"); else location.href = url;
-    const who = DEST.f ? " στον/στην " + DEST.f.replace(/[<>&"]/g, "") : "";
-    note = `📱 πάτα <b>αποστολή</b> στο μήνυμα για να φτάσει${who}!`;
-  } else {
+let pending = null, sentOnce = false;
+function fillSummary(sm, d) {
+  sm.innerHTML = "";
+  [["🙋 ", d.name], ["📍 ", d.from], ["", `${d.drink.emoji} ${d.drink.name} · ${d.place.name}`], ["📅 ", niceDate(d.date)], ["🕘 ", timeLabel(d.time)]].forEach(([pre, val], i) => {
+    if (i) sm.append(document.createElement("br"));
+    const b = document.createElement("b"); b.textContent = val; sm.append(pre, b);
+  });
+}
+const backToForm = () => { $("confirm").classList.add("hidden"); $("form").classList.remove("hidden"); $("whenHead").classList.remove("hidden"); };
+$("confirmNo").onclick = () => { backToForm(); beep(400, .06); };
+$("changeMind").onclick = e => {
+  e.preventDefault(); backToForm();
+  $("send").textContent = "ΣΤΕΙΛΕ ΑΛΛΑΓΗ 🍷";
+  show("s-when");
+};
+$("confirmYes").onclick = async () => {
+  const d = pending; if (!d) return;
+  d.change = sentOnce;
+  const send = $("confirmYes");
+  let note = "", ok = false;
   send.disabled = true; send.textContent = "ΣΤΕΛΝΕΤΑΙ...";
   try {
     if (DEST.e) { await sendMail(d); note = "✉ στάλθηκε!"; }
     else { await sendNtfy(d); note = "🍷 στάλθηκε!"; }
+    ok = true;
   }
   catch (ex) {
     const why = String(ex.message || ex).replace(/[<>&]/g, "");
     note = !DEST.e
-      ? `Η ειδοποίηση δεν έφτασε 😬 στείλε ένα μήνυμα${DEST.f ? " στον/στην " + DEST.f.replace(/[<>&"]/g, "") : ""} με τα παραπάνω!`
+      ? `Η ειδοποίηση δεν έφτασε 😬 στείλε ένα μήνυμα${DEST.f ? " στον/στην " + DEST.f.replace(/[<>&"]/g, "") : ""} με τα παραπάνω!<small>${why.slice(0, 80)}</small>`
       : /activ/i.test(why)
       ? `Η φόρμα θέλει ενεργοποίηση: άνοιξε το ${MAIL_TO} (κοίτα και στα spam) και πάτα «Activate Form». <a href="${mailtoLink(d)}">ή στείλ' το με mail</a>`
       : `Το mail δεν έφυγε 😬 <a href="${mailtoLink(d)}">στείλ' το από εδώ</a><small>${why}</small>`;
   }
-  send.disabled = false; send.textContent = "ΣΤΕΙΛ' ΤΟ 🍷";
+  send.disabled = false; send.textContent = "ΝΑΙ, ΣΤΕΙΛ' ΤΟ 🍷";
+  if (ok) {
+    sentOnce = true;
+    store.set({ name: d.name, from: d.from, date: d.date, time: d.time, msg: d.msg, drink: d.drink.id, place: d.place.id });
   }
-
+  backToForm();
   const t = $("doneText");
   t.textContent = "";
   t.append(`${d.name}, τα λέμε ${d.place.article} `);
   const b = document.createElement("b"); b.textContent = d.place.acc; t.append(b, ` ${d.drink.gia} ${d.drink.emoji}`);
-  t.append(document.createElement("br"), `${niceDate(d.date)} στις ${d.time}!`);
+  fillSummary($("summary"), d);
   $("doneNote").innerHTML = note;
   $("cal").href = calLink(d);
   show("s-done");
   jingle(); confetti(90); buzz([30, 50, 30, 50, 80]);
-});
-
-$("again").onclick = () => {
-  $("msgBtn").style.display = "none";
-  state.noCount = 0; hint.innerHTML = "&nbsp;";
-  no.classList.remove("flying"); no.style.left = no.style.top = ""; no.textContent = "ΟΧΙ";
-  $("btns").appendChild(no); yes.style.setProperty("--s", 1);
-  show("s-ask");
 };
 
 /* ---------- κομφετί ---------- */
@@ -962,6 +1136,7 @@ const destReady = !CODE ? Promise.resolve() :
     .then(r => r.json()).then(j => {
       if (!j.ok || j.site !== "retsines") return;
       DEST.f = j.f;
+      if (j.note) DEST.note = String(j.note).slice(0, 200);
       if (j.mode === "ntfy") DEST.c = CODE;
       else if (j.mode === "email") { DEST.e = j.e; MAIL_TO = j.e; }
       else if (j.p) { DEST.p = j.p; DEST.m = j.mode === "wa" ? "w" : "s"; }
@@ -969,6 +1144,115 @@ const destReady = !CODE ? Promise.resolve() :
     }).catch(() => {});
 showFrom();
 
+/* ---------- αποθήκευση απάντησης (για αντίστροφη μέτρηση) ---------- */
+const SAVE_KEY = "retsines-answer:" + (CODE || "default");
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); } catch (e) { return null; } },
+  set(v) { try { localStorage.setItem(SAVE_KEY, JSON.stringify(v)); } catch (e) {} },
+};
+const whenOf = a => { const [Y, M, D] = a.date.split("-").map(Number); return new Date(Y, M - 1, D, 0, toMin(a.time)); };
+const full = a => ({ ...a, drink: CONFIG.drinks.find(o => o.id === a.drink) || CONFIG.drinks[0], place: CONFIG.places.find(o => o.id === a.place) || CONFIG.places[0] });
+
+/* ---------- εισιτήριο (εικόνα για να την κρατήσει) ---------- */
+async function makeTicket(a) {
+  const W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d"); x.imageSmoothingEnabled = false;
+  const titleFont = getComputedStyle(document.querySelector("h2")).fontFamily;
+  const bodyFont = getComputedStyle(document.body).fontFamily;
+  try { await document.fonts.ready; } catch (e) {}
+  // νυχτερινός ουρανός
+  ["#0d0d26", "#141438", "#1b1c4a", "#24275a", "#312f6a"].forEach((col, i) => { x.fillStyle = col; x.fillRect(0, i * H / 5, W, H / 5 + 1); });
+  for (let i = 0; i < 90; i++) { x.fillStyle = i % 5 ? "#ffffff" : "#f2c14e"; const z = i % 3 ? 4 : 8; x.fillRect((i * 397) % W, (i * 233) % (H * .9), z, z); }
+  // εισιτήριο
+  const tx = 90, ty = 150, tw = W - 180, th = H - 260;
+  x.fillStyle = "#1a1a2e"; x.fillRect(tx - 10, ty - 10, tw + 20, th + 20);
+  x.fillStyle = "#fff4d6"; x.fillRect(tx, ty, tw, th);
+  x.fillStyle = "#1a1a2e";  // εγκοπές
+  [[tx - 10, ty + 330], [tx + tw - 50, ty + 330]].forEach(([nx, ny]) => x.fillRect(nx, ny, 60, 60));
+  x.fillStyle = "#24275a"; x.fillRect(tx - 10, ty + 340, 50, 40); x.fillRect(tx + tw - 40, ty + 340, 50, 40);
+  for (let i = tx + 70; i < tx + tw - 70; i += 36) { x.fillStyle = "#d9c99e"; x.fillRect(i, ty + 357, 18, 6); } // διάτρητη γραμμή
+  // μπουκάλι
+  const bs = SPRITES.bottle, sc = 9, bw = bs[0].length * sc;
+  bs.forEach((row, j) => [...row].forEach((ch, i) => { if (PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(W / 2 - bw / 2 + i * sc, ty + 26 + j * sc, sc, sc); } }));
+  x.textAlign = "center"; x.fillStyle = "#d99a2b";
+  x.font = `52px ${titleFont}`; x.fillText("ΒΓΑΙΝΟΥΜΕ", W / 2, ty + 290);
+  // στοιχεία
+  const f = full(a);
+  const rows = [["ΠΟΤΕ", niceDate(a.date)], ["ΩΡΑ", afterMidnight(a.time) ? a.time + " (ξημερ.)" : a.time],
+    ["ΤΙ / ΠΟΥ", `${f.drink.emoji} ${f.drink.name} · ${f.place.name}`], ["ΠΟΙΑ / ΠΟΙΟΣ", a.name + (a.from ? ` · ${a.from}` : "")]];
+  let yy = ty + 440;
+  rows.forEach(([k, v]) => {
+    x.textAlign = "left"; x.fillStyle = "#7a6a8a"; x.font = `26px ${titleFont}`; x.fillText(k, tx + 70, yy);
+    x.fillStyle = "#1a1a2e"; x.font = `54px ${bodyFont}`;
+    let t = v; while (x.measureText(t).width > tw - 140 && t.length > 4) t = t.slice(0, -2) + "…";
+    x.fillText(t, tx + 70, yy + 62); yy += 128;
+  });
+  // «barcode»
+  for (let i = 0; i < 46; i++) { if ((i * 7) % 3) { x.fillStyle = "#1a1a2e"; x.fillRect(tx + 70 + i * 16, ty + th - 100, (i % 4) ? 8 : 12, 64); } }
+  x.textAlign = "center"; x.fillStyle = "#ffffff"; x.font = `30px ${titleFont}`;
+  x.fillText("Κανονίσαμε έξοδο! 🍷", W / 2, 96);
+  x.font = `26px ${bodyFont}`; x.fillStyle = "#c9c3e6"; x.fillText("nikodhmos.github.io/retsines", W / 2, H - 40);
+  return c;
+}
+async function downloadTicket(a, btn) {
+  const old = btn.textContent; btn.disabled = true; btn.textContent = "...";
+  try {
+    const c = await makeTicket(a);
+    const blob = await new Promise(r => c.toBlob(r, "image/png"));
+    // μόνο κατέβασμα (όχι μενού κοινοποίησης)
+    const url = URL.createObjectURL(blob), l = document.createElement("a");
+    l.href = url; l.download = "retsines-eisitirio.png"; document.body.appendChild(l); l.click(); l.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    alertNote(btn, "κατέβηκε ✓");
+  } catch (e) { alertNote(btn, "δεν έγινε 😬"); }
+  btn.disabled = false; btn.textContent = old;
+}
+function alertNote(btn, t) { const n = document.createElement("small"); n.textContent = " " + t; btn.after(n); setTimeout(() => n.remove(), 3000); }
+$("ticketBtn").onclick = e => { const a = store.get(); if (a) downloadTicket(a, e.currentTarget); };
+$("againTicket").onclick = e => { const a = store.get(); if (a) downloadTicket(a, e.currentTarget); };
+
+/* ---------- αντίστροφη μέτρηση όταν ξανανοίγει το link ---------- */
+let cdTimer = 0;
+function renderCountdown(a) {
+  const ms = whenOf(a) - new Date(), box = $("countdown");
+  box.innerHTML = "";
+  if (ms <= 0) { $("againLead").textContent = ""; box.innerHTML = '<p class="now">Ώρα να βγούμε! 🍷</p>'; return; }
+  const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60;
+  $("againLead").textContent = d === 0 && h < 1 ? "Βγαίνουμε σε λίγο!" : "Βγαίνουμε σε";
+  [[d, d === 1 ? "μέρα" : "μέρες"], [h, h === 1 ? "ώρα" : "ώρες"], [m, "λεπτά"]].forEach(([v, l], i) => {
+    if (i === 0 && d === 0) return;
+    const el = document.createElement("div"); el.className = "cd";
+    const b = document.createElement("b"); b.textContent = v; const sm = document.createElement("small"); sm.textContent = l;
+    el.append(b, sm); box.appendChild(el);
+  });
+}
+function showAgain(a) {
+  fillSummary($("againSum"), full(a));
+  renderCountdown(a);
+  clearInterval(cdTimer); cdTimer = setInterval(() => $("s-again").classList.contains("active") ? renderCountdown(a) : clearInterval(cdTimer), 30000);
+  show("s-again");
+}
+function prefill(a) {
+  const f = full(a);
+  state.drink = f.drink; state.place = f.place;
+  buildTimeChips(f.drink.times); $("msg").placeholder = f.drink.hint || "";
+  $("placeLabel").textContent = `${f.drink.emoji} ${f.drink.name} · ${f.place.name}`;
+  $("name").value = a.name || ""; $("from").value = a.from || ""; $("msg").value = a.msg || "";
+  dateIn.value = a.date; timeIn.value = a.time; setTime(toMin(a.time));
+  sentOnce = true; $("send").textContent = "ΣΤΕΙΛΕ ΑΛΛΑΓΗ 🍷";
+}
+$("againChange").onclick = () => { const a = store.get(); if (!a) return; unlockAudio(); prefill(a); show("s-when"); };
+$("againIntro").onclick = () => { clearInterval(cdTimer); show("s-intro"); };
+(() => { const a = store.get(); if (a && a.date && a.drink && whenOf(a) > new Date(Date.now() - 6 * 36e5)) showAgain(a); })();
+
+/* ---------- προσωπικό μήνυμα από το link ---------- */
+function showLetter() {
+  if (!DEST.note) return;
+  $("letterText").textContent = "«" + DEST.note + "»";
+  $("letterFrom").textContent = DEST.f || "";
+  $("letter").classList.remove("hidden");
+}
+destReady.then(showLetter);
 
 // Αν ανοίχτηκε σαν αρχείο από τον υπολογιστή, ούτε η μουσική ούτε το mail δουλεύουν
 if (location.protocol === "file:") {
